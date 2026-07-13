@@ -24,11 +24,11 @@ final class OnboardingViewController: NSViewController {
         title.font = NSFont.systemFont(ofSize: 22, weight: .semibold)
 
         let body = NSTextField(wrappingLabelWithString: """
-        把「非活跃窗口的自动隐藏/最小化」做成无感后台服务，降低 WindowServer 合成开销，减少发热与耗电。
+        把「离开前台一段时间后的自动隐藏/最小化」做成无感后台服务，降低 WindowServer 合成开销，减少发热与耗电。
 
         1. 默认不会优化任何应用，请先把需要的应用加入名单。
         2. 默认策略是「隐藏」；「最小化」需要辅助功能权限。
-        3. 切回应用时会立即恢复。
+        3. 切到其他应用并等待阈值秒数后触发；切回时立即恢复。
         """)
         body.font = NSFont.systemFont(ofSize: 13)
 

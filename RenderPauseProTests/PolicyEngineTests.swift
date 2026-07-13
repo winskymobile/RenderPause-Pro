@@ -26,31 +26,47 @@ final class PolicyEngineTests: XCTestCase {
         super.tearDown()
     }
 
+    private func snap(
+        id: String,
+        active: Bool = false,
+        hidden: Bool = false,
+        finished: Bool = false,
+        since: TimeInterval = 0
+    ) -> RunningAppSnapshot {
+        RunningAppSnapshot(
+            bundleID: id,
+            isActive: active,
+            isHidden: hidden,
+            isFinished: finished,
+            secondsSinceDeactivated: since
+        )
+    }
+
     func testNoRulesNoCommands() {
         let cmds = engine.evaluate(
             frontmostBundleID: "com.apple.finder",
-            idleSeconds: 120,
             running: []
         )
         XCTAssertTrue(cmds.isEmpty)
     }
 
-    func testOptimizeWhenInactiveAndIdle() {
+    func testOptimizeWhenBackgroundLongEnough() {
         _ = rules.upsert(.makeNew(bundleID: "com.demo.app", displayName: "Demo"))
         let cmds = engine.evaluate(
             frontmostBundleID: "com.apple.finder",
-            idleSeconds: 30,
-            running: [RunningAppSnapshot(bundleID: "com.demo.app", isActive: false, isHidden: false, isFinished: false)]
+            running: [snap(id: "com.demo.app", since: 30)]
         )
-        XCTAssertTrue(cmds.contains(.optimize(bundleID: "com.demo.app", action: .hide, reason: "inactive+idle")))
+        XCTAssertTrue(cmds.contains(where: {
+            if case .optimize(let id, .hide, _) = $0, id == "com.demo.app" { return true }
+            return false
+        }))
     }
 
     func testDoNotOptimizeWhenFrontmost() {
         _ = rules.upsert(.makeNew(bundleID: "com.demo.app", displayName: "Demo"))
         let cmds = engine.evaluate(
             frontmostBundleID: "com.demo.app",
-            idleSeconds: 999,
-            running: [RunningAppSnapshot(bundleID: "com.demo.app", isActive: true, isHidden: false, isFinished: false)]
+            running: [snap(id: "com.demo.app", active: true, since: 999)]
         )
         XCTAssertFalse(cmds.contains(where: {
             if case .optimize = $0 { return true }
@@ -58,14 +74,13 @@ final class PolicyEngineTests: XCTestCase {
         }))
     }
 
-    func testDoNotOptimizeWhenIdleTooLow() {
+    func testDoNotOptimizeWhenBackgroundTooShort() {
         var rule = AppRule.makeNew(bundleID: "com.demo.app", displayName: "Demo")
         rule.idleSeconds = 60
         _ = rules.upsert(rule)
         let cmds = engine.evaluate(
             frontmostBundleID: "com.apple.finder",
-            idleSeconds: 10,
-            running: [RunningAppSnapshot(bundleID: "com.demo.app", isActive: false, isHidden: false, isFinished: false)]
+            running: [snap(id: "com.demo.app", since: 10)]
         )
         XCTAssertFalse(cmds.contains(where: {
             if case .optimize = $0 { return true }
@@ -78,8 +93,7 @@ final class PolicyEngineTests: XCTestCase {
         session.set("com.demo.app", .optimized)
         let cmds = engine.evaluate(
             frontmostBundleID: "com.demo.app",
-            idleSeconds: 0,
-            running: [RunningAppSnapshot(bundleID: "com.demo.app", isActive: true, isHidden: true, isFinished: false)]
+            running: [snap(id: "com.demo.app", active: true, hidden: true, since: 0)]
         )
         XCTAssertTrue(cmds.contains(.restore(bundleID: "com.demo.app", action: .hide, reason: "activated")))
     }
@@ -90,8 +104,7 @@ final class PolicyEngineTests: XCTestCase {
         _ = rules.upsert(rule)
         let cmds = engine.evaluate(
             frontmostBundleID: "com.apple.finder",
-            idleSeconds: 999,
-            running: [RunningAppSnapshot(bundleID: "com.demo.app", isActive: false, isHidden: false, isFinished: false)]
+            running: [snap(id: "com.demo.app", since: 999)]
         )
         XCTAssertTrue(cmds.contains(.setState(bundleID: "com.demo.app", state: .paused)))
         XCTAssertFalse(cmds.contains(where: {
@@ -105,8 +118,7 @@ final class PolicyEngineTests: XCTestCase {
         _ = rules.upsert(.makeNew(bundleID: "com.demo.app", displayName: "Demo"))
         let cmds = engine.evaluate(
             frontmostBundleID: "com.apple.finder",
-            idleSeconds: 999,
-            running: [RunningAppSnapshot(bundleID: "com.demo.app", isActive: false, isHidden: false, isFinished: false)]
+            running: [snap(id: "com.demo.app", since: 999)]
         )
         XCTAssertFalse(cmds.contains(where: {
             if case .optimize = $0 { return true }
@@ -119,8 +131,7 @@ final class PolicyEngineTests: XCTestCase {
         engine.exempt(bundleID: "com.demo.app", until: Date().addingTimeInterval(600))
         let cmds = engine.evaluate(
             frontmostBundleID: "com.apple.finder",
-            idleSeconds: 999,
-            running: [RunningAppSnapshot(bundleID: "com.demo.app", isActive: false, isHidden: false, isFinished: false)]
+            running: [snap(id: "com.demo.app", since: 999)]
         )
         XCTAssertTrue(cmds.contains(.setState(bundleID: "com.demo.app", state: .paused)))
     }
@@ -129,10 +140,26 @@ final class PolicyEngineTests: XCTestCase {
         _ = rules.upsert(.makeNew(bundleID: "com.demo.app", displayName: "Demo"))
         let cmds = engine.evaluate(
             frontmostBundleID: "com.apple.finder",
-            idleSeconds: 999,
-            running: [RunningAppSnapshot(bundleID: "com.demo.app", isActive: false, isHidden: true, isFinished: false)]
+            running: [snap(id: "com.demo.app", hidden: true, since: 999)]
         )
-        XCTAssertFalse(cmds.contains(.optimize(bundleID: "com.demo.app", action: .hide, reason: "inactive+idle")))
+        XCTAssertFalse(cmds.contains(where: {
+            if case .optimize = $0 { return true }
+            return false
+        }))
         XCTAssertTrue(cmds.contains(.setState(bundleID: "com.demo.app", state: .optimized)))
+    }
+
+    func testSystemInputBusyDoesNotBlockBackgroundOptimize() {
+        // Regression: previously used global input idle; moving mouse while another app
+        // is frontmost must still allow optimizing background targets.
+        _ = rules.upsert(.makeNew(bundleID: "com.demo.app", displayName: "Demo"))
+        let cmds = engine.evaluate(
+            frontmostBundleID: "com.apple.Safari",
+            running: [snap(id: "com.demo.app", since: 30)]
+        )
+        XCTAssertTrue(cmds.contains(where: {
+            if case .optimize(let id, _, _) = $0, id == "com.demo.app" { return true }
+            return false
+        }))
     }
 }

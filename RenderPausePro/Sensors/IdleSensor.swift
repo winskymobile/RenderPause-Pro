@@ -1,8 +1,8 @@
 import CoreGraphics
 import Foundation
 
+/// System-wide input idle (diagnostic). Policy no longer depends on this.
 enum IdleSensor {
-    /// Seconds since last keyboard/mouse event in the login session.
     static func secondsSinceLastInput() -> TimeInterval {
         let types: [CGEventType] = [
             .keyDown, .keyUp, .flagsChanged,

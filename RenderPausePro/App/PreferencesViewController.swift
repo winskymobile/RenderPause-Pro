@@ -64,7 +64,7 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
                 ("name", "名称", 140),
                 ("bundle", "Bundle ID", 180),
                 ("action", "策略", 80),
-                ("idle", "空闲秒", 70),
+                ("idle", "后台秒", 70),
                 ("locked", "锁定", 50)
             ]
         )

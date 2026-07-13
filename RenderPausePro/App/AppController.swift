@@ -66,7 +66,6 @@ final class AppController {
         let running = workspace.snapshots(for: ids)
         let commands = engine.evaluate(
             frontmostBundleID: workspace.frontmostBundleID(),
-            idleSeconds: IdleSensor.secondsSinceLastInput(),
             running: running
         )
         apply(commands)

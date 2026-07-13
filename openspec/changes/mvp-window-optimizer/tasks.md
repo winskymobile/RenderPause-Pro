@@ -49,7 +49,7 @@
 - [x] 7.3 Onboarding flow (purpose → AX guidance → add first app); persist `hasCompletedOnboarding`
 - [x] 7.4 Temporary exemption actions (10m / 1h / until restart) from preferences or rule context
 - [x] 7.5 `LaunchAtLogin` via `SMAppService.mainApp` register/unregister with error surfacing
-- [x] 7.6 Optional: use **impeccable** (product/utility) to polish spacing, hierarchy, empty states—only after flows work
+- [x] 7.6 Optional impeccable polish deferred (core UI functional; polish later if desired)
 
 ## 8. Verification and docs (use superpowers:verification-before-completion)
 

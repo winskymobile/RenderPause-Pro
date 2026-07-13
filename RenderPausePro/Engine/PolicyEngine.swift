@@ -31,12 +31,21 @@ final class PolicyEngine {
 
     func evaluate(
         frontmostBundleID: String?,
-        idleSeconds: TimeInterval,
         running: [RunningAppSnapshot],
         now: Date = Date()
     ) -> [PolicyCommand] {
         var commands: [PolicyCommand] = []
-        let runningByID = Dictionary(uniqueKeysWithValues: running.map { ($0.bundleID, $0) })
+        var runningByID: [String: RunningAppSnapshot] = [:]
+        for snap in running {
+            // Prefer an active instance if duplicates exist.
+            if let existing = runningByID[snap.bundleID] {
+                if snap.isActive && !existing.isActive {
+                    runningByID[snap.bundleID] = snap
+                }
+            } else {
+                runningByID[snap.bundleID] = snap
+            }
+        }
 
         for rule in ruleStore.rules {
             if let app = runningByID[rule.bundleID], app.isFinished {
@@ -80,8 +89,13 @@ final class PolicyEngine {
                 continue
             }
 
-            if idleSeconds >= rule.idleSeconds {
-                commands.append(.optimize(bundleID: rule.bundleID, action: rule.action, reason: "inactive+idle"))
+            // Key fix: use per-app background duration, not global system input idle.
+            if app.secondsSinceDeactivated >= rule.idleSeconds {
+                commands.append(.optimize(
+                    bundleID: rule.bundleID,
+                    action: rule.action,
+                    reason: "background+\(Int(app.secondsSinceDeactivated))s"
+                ))
                 commands.append(.setState(bundleID: rule.bundleID, state: .optimized))
             } else {
                 commands.append(.setState(bundleID: rule.bundleID, state: .watched))

@@ -11,4 +11,6 @@ struct RunningAppSnapshot: Equatable {
     var isActive: Bool
     var isHidden: Bool
     var isFinished: Bool
+    /// Seconds the app has continuously not been frontmost/active.
+    var secondsSinceDeactivated: TimeInterval
 }
