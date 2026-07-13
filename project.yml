@@ -1,0 +1,51 @@
+name: RenderPausePro
+options:
+  bundleIdPrefix: com.renderpause
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+    ONLY_ACTIVE_ARCH: YES
+targets:
+  RenderPausePro:
+    type: application
+    platform: macOS
+    sources:
+      - path: RenderPausePro
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.renderpause.pro
+        PRODUCT_NAME: RenderPausePro
+        PRODUCT_MODULE_NAME: RenderPausePro
+        INFOPLIST_FILE: RenderPausePro/Resources/Info.plist
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_STYLE: Automatic
+        COMBINE_HIDPI_IMAGES: YES
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
+        GENERATE_INFOPLIST_FILE: NO
+        ARCHS: arm64
+        VALID_ARCHS: arm64
+        SUPPORTED_PLATFORMS: macosx
+        # Host unit tests in-process for menu bar app reliability
+        ENABLE_TESTABILITY: YES
+    scheme:
+      testTargets:
+        - RenderPauseProTests
+  RenderPauseProTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - RenderPauseProTests
+    dependencies:
+      - target: RenderPausePro
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.renderpause.pro.tests
+        PRODUCT_MODULE_NAME: RenderPauseProTests
+        GENERATE_INFOPLIST_FILE: YES
+        MACOSX_DEPLOYMENT_TARGET: "26.0"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/RenderPausePro.app/Contents/MacOS/RenderPausePro"
+        BUNDLE_LOADER: "$(TEST_HOST)"

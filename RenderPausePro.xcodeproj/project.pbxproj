@@ -1,0 +1,577 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		00724BCEDBA4FB6D8C131520 /* WatchState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1408325638D1785E3574B9 /* WatchState.swift */; };
+		007442C7FDC8481EA4C36B7D /* HideActuator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4537BC127D394D6AD3D75182 /* HideActuator.swift */; };
+		05266BE31AC38861008450AE /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0635E6ECFF2514877AB6403 /* SettingsStore.swift */; };
+		05AA20B34A5B7C5CDBFC4C82 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9273E8CA87944A15259C2DA /* AppDelegate.swift */; };
+		0C2D36D24362D78A99FFEAA4 /* RestoreCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C71A3436007DD1442BEDA /* RestoreCoordinator.swift */; };
+		0E6E4347883EEF13C2BA299A /* PreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F7A9763EDD9B0024AE1290 /* PreferencesViewController.swift */; };
+		1E08D85E07A1F6DC52450E3D /* AppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76005DEB6338705C7234BA2 /* AppController.swift */; };
+		29CC8D6D8B6CDCB7ED0E4C82 /* IdleSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC01D1A5C53CC1A99848BFC9 /* IdleSensor.swift */; };
+		390FD1CD481911F78146C9DC /* RuleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D5AFF57762DF055C86329D /* RuleStore.swift */; };
+		39B93051934958D1B697318B /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E1DABFC407881931066A2EC /* SettingsStoreTests.swift */; };
+		3A37D995BC76E3D6A25FD8C7 /* RuleStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240A3217BEC48AD5A8A6275F /* RuleStoreTests.swift */; };
+		440F4D6696F4C9D68BDCF9C8 /* AppMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E7AA4F58D452AE8ED14A1D /* AppMain.swift */; };
+		44B30DD1B5D5F294A15BF60E /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7276DAE93EF4463DE4467D09 /* OnboardingViewController.swift */; };
+		5B8F93396F1DBBF1500F5E80 /* PolicyEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3710DC9C36CD2905B5D0C486 /* PolicyEngine.swift */; };
+		672884A7EF1A21504A58FE22 /* SessionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495F9B204DE93123710F436C /* SessionStoreTests.swift */; };
+		75EBFCCD1C626F882AFADDE9 /* RunningAppPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38856577D672987A807258D8 /* RunningAppPickerViewController.swift */; };
+		80DAB8C242B97EE224EFCEE9 /* PolicyEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F6388F582F87AA4E9EAC7B /* PolicyEngineTests.swift */; };
+		81CB0A0290B984B7B63D2C95 /* BundleIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6EBC2B311B49FCC80354B1C /* BundleIdentity.swift */; };
+		822E4D674AD634AA9A67DA0F /* PolicyDecision.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC24A69903DB21B8B8A3361 /* PolicyDecision.swift */; };
+		8FEF15B71D2CFCC044810673 /* MinimizeActuator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBD9D707D4FCA418B057B17C /* MinimizeActuator.swift */; };
+		A016DB5CE06C5A413FCCCDA8 /* LogEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0229236AAF9CA11057561E /* LogEntry.swift */; };
+		A626178136D5C5A71EDCD9F0 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BD501BE542D1DB5D1044E0 /* AppSettings.swift */; };
+		BA0160E6E273524301D2D6C8 /* PermissionGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3377727397B78CD78E9C99EC /* PermissionGate.swift */; };
+		C021BB46989E91B31AB7CA83 /* ActionLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37BCE226F0DAD7D65F62E85 /* ActionLog.swift */; };
+		C12454349B072797356A9641 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296788FC88D522353FB8238A /* PreferencesWindowController.swift */; };
+		C2971429796116368438E5B6 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 178D58E4478F7108AD5C2D7F /* MenuBarController.swift */; };
+		D274F8DA0F0012D5C8D898D4 /* WorkspaceSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52379DC05A04627E46DA78D8 /* WorkspaceSensor.swift */; };
+		D71F1A87E138D297E21AEB5D /* AppRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32789D5C65C1DFD2B715FB13 /* AppRule.swift */; };
+		E2F454A7CD697680B13AF0DC /* LaunchAtLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54CFDC444BED620FEDF1DF77 /* LaunchAtLogin.swift */; };
+		FB8311CFCFBE62DDE48D1FDA /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CE59903C954149C2F9BECA /* SessionStore.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BD9F05A970E03755AEA014BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8A890B108A5847DBD4F4D1C8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A002D40FAA0F77222AD2D709;
+			remoteInfo = RenderPausePro;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		178D58E4478F7108AD5C2D7F /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
+		240A3217BEC48AD5A8A6275F /* RuleStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleStoreTests.swift; sourceTree = "<group>"; };
+		296788FC88D522353FB8238A /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
+		32789D5C65C1DFD2B715FB13 /* AppRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRule.swift; sourceTree = "<group>"; };
+		3377727397B78CD78E9C99EC /* PermissionGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionGate.swift; sourceTree = "<group>"; };
+		3710DC9C36CD2905B5D0C486 /* PolicyEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyEngine.swift; sourceTree = "<group>"; };
+		38856577D672987A807258D8 /* RunningAppPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningAppPickerViewController.swift; sourceTree = "<group>"; };
+		38D5AFF57762DF055C86329D /* RuleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleStore.swift; sourceTree = "<group>"; };
+		3E1DABFC407881931066A2EC /* SettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStoreTests.swift; sourceTree = "<group>"; };
+		4537BC127D394D6AD3D75182 /* HideActuator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideActuator.swift; sourceTree = "<group>"; };
+		495F9B204DE93123710F436C /* SessionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStoreTests.swift; sourceTree = "<group>"; };
+		52379DC05A04627E46DA78D8 /* WorkspaceSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSensor.swift; sourceTree = "<group>"; };
+		54CFDC444BED620FEDF1DF77 /* LaunchAtLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLogin.swift; sourceTree = "<group>"; };
+		555C71A3436007DD1442BEDA /* RestoreCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreCoordinator.swift; sourceTree = "<group>"; };
+		567932766CE446CDD0C084AC /* RenderPauseProTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RenderPauseProTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6BC24A69903DB21B8B8A3361 /* PolicyDecision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyDecision.swift; sourceTree = "<group>"; };
+		6F0229236AAF9CA11057561E /* LogEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogEntry.swift; sourceTree = "<group>"; };
+		7276DAE93EF4463DE4467D09 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		82BD501BE542D1DB5D1044E0 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		84CE59903C954149C2F9BECA /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
+		A7F6388F582F87AA4E9EAC7B /* PolicyEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyEngineTests.swift; sourceTree = "<group>"; };
+		A9F7A9763EDD9B0024AE1290 /* PreferencesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesViewController.swift; sourceTree = "<group>"; };
+		AA1408325638D1785E3574B9 /* WatchState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchState.swift; sourceTree = "<group>"; };
+		B7E7AA4F58D452AE8ED14A1D /* AppMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMain.swift; sourceTree = "<group>"; };
+		CBD9D707D4FCA418B057B17C /* MinimizeActuator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimizeActuator.swift; sourceTree = "<group>"; };
+		D0635E6ECFF2514877AB6403 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		D6EBC2B311B49FCC80354B1C /* BundleIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleIdentity.swift; sourceTree = "<group>"; };
+		D9273E8CA87944A15259C2DA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		DC01D1A5C53CC1A99848BFC9 /* IdleSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdleSensor.swift; sourceTree = "<group>"; };
+		E0F7924C54ECCC0A944E3A75 /* RenderPausePro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RenderPausePro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E37BCE226F0DAD7D65F62E85 /* ActionLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionLog.swift; sourceTree = "<group>"; };
+		E76005DEB6338705C7234BA2 /* AppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppController.swift; sourceTree = "<group>"; };
+		F92A0C2498DB98EAAF85FCA7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0327BE025AC00EB6AA1761C1 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				6BC24A69903DB21B8B8A3361 /* PolicyDecision.swift */,
+				3710DC9C36CD2905B5D0C486 /* PolicyEngine.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		0FAD86B93E0B475B3ED3C07B /* App */ = {
+			isa = PBXGroup;
+			children = (
+				E76005DEB6338705C7234BA2 /* AppController.swift */,
+				D9273E8CA87944A15259C2DA /* AppDelegate.swift */,
+				B7E7AA4F58D452AE8ED14A1D /* AppMain.swift */,
+				178D58E4478F7108AD5C2D7F /* MenuBarController.swift */,
+				7276DAE93EF4463DE4467D09 /* OnboardingViewController.swift */,
+				A9F7A9763EDD9B0024AE1290 /* PreferencesViewController.swift */,
+				296788FC88D522353FB8238A /* PreferencesWindowController.swift */,
+				38856577D672987A807258D8 /* RunningAppPickerViewController.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		12C5CD96783CEC941F0BD925 /* RenderPausePro */ = {
+			isa = PBXGroup;
+			children = (
+				87162A619A5E3166F0ABEEC8 /* Actuators */,
+				0FAD86B93E0B475B3ED3C07B /* App */,
+				0327BE025AC00EB6AA1761C1 /* Engine */,
+				6005DA76E06FA07C7AE2CEC3 /* Models */,
+				9A01951960F643D527EFBAF5 /* Resources */,
+				47699939B2B1593F7EEFCB63 /* Sensors */,
+				3B7D7034E022F94CF4FC6A87 /* Store */,
+				41F386AEE816C6D0E020AB55 /* Support */,
+			);
+			path = RenderPausePro;
+			sourceTree = "<group>";
+		};
+		3B7D7034E022F94CF4FC6A87 /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				E37BCE226F0DAD7D65F62E85 /* ActionLog.swift */,
+				38D5AFF57762DF055C86329D /* RuleStore.swift */,
+				84CE59903C954149C2F9BECA /* SessionStore.swift */,
+				D0635E6ECFF2514877AB6403 /* SettingsStore.swift */,
+			);
+			path = Store;
+			sourceTree = "<group>";
+		};
+		41F386AEE816C6D0E020AB55 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				D6EBC2B311B49FCC80354B1C /* BundleIdentity.swift */,
+				54CFDC444BED620FEDF1DF77 /* LaunchAtLogin.swift */,
+				3377727397B78CD78E9C99EC /* PermissionGate.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		47699939B2B1593F7EEFCB63 /* Sensors */ = {
+			isa = PBXGroup;
+			children = (
+				DC01D1A5C53CC1A99848BFC9 /* IdleSensor.swift */,
+				52379DC05A04627E46DA78D8 /* WorkspaceSensor.swift */,
+			);
+			path = Sensors;
+			sourceTree = "<group>";
+		};
+		6005DA76E06FA07C7AE2CEC3 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				32789D5C65C1DFD2B715FB13 /* AppRule.swift */,
+				82BD501BE542D1DB5D1044E0 /* AppSettings.swift */,
+				6F0229236AAF9CA11057561E /* LogEntry.swift */,
+				AA1408325638D1785E3574B9 /* WatchState.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		71B68E83A0A4E96C4F875DEB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E0F7924C54ECCC0A944E3A75 /* RenderPausePro.app */,
+				567932766CE446CDD0C084AC /* RenderPauseProTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7D08CC60CE7EDDA4B8744A14 = {
+			isa = PBXGroup;
+			children = (
+				12C5CD96783CEC941F0BD925 /* RenderPausePro */,
+				B129FF8428ADDFCFC7F03DC1 /* RenderPauseProTests */,
+				71B68E83A0A4E96C4F875DEB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		87162A619A5E3166F0ABEEC8 /* Actuators */ = {
+			isa = PBXGroup;
+			children = (
+				4537BC127D394D6AD3D75182 /* HideActuator.swift */,
+				CBD9D707D4FCA418B057B17C /* MinimizeActuator.swift */,
+				555C71A3436007DD1442BEDA /* RestoreCoordinator.swift */,
+			);
+			path = Actuators;
+			sourceTree = "<group>";
+		};
+		9A01951960F643D527EFBAF5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F92A0C2498DB98EAAF85FCA7 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B129FF8428ADDFCFC7F03DC1 /* RenderPauseProTests */ = {
+			isa = PBXGroup;
+			children = (
+				A7F6388F582F87AA4E9EAC7B /* PolicyEngineTests.swift */,
+				240A3217BEC48AD5A8A6275F /* RuleStoreTests.swift */,
+				495F9B204DE93123710F436C /* SessionStoreTests.swift */,
+				3E1DABFC407881931066A2EC /* SettingsStoreTests.swift */,
+			);
+			path = RenderPauseProTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0B94133195AFC94D2DAF6BB3 /* RenderPauseProTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1232BE7B92703C5342589BE /* Build configuration list for PBXNativeTarget "RenderPauseProTests" */;
+			buildPhases = (
+				8AEE174005B0A1F9200172ED /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FECBC81A49D0B28E50853E12 /* PBXTargetDependency */,
+			);
+			name = RenderPauseProTests;
+			packageProductDependencies = (
+			);
+			productName = RenderPauseProTests;
+			productReference = 567932766CE446CDD0C084AC /* RenderPauseProTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A002D40FAA0F77222AD2D709 /* RenderPausePro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E372BD507B4778C1DCCBC36B /* Build configuration list for PBXNativeTarget "RenderPausePro" */;
+			buildPhases = (
+				4AC44E1733E0175801AFF509 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RenderPausePro;
+			packageProductDependencies = (
+			);
+			productName = RenderPausePro;
+			productReference = E0F7924C54ECCC0A944E3A75 /* RenderPausePro.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8A890B108A5847DBD4F4D1C8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					A002D40FAA0F77222AD2D709 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 27596683760BAA8F20A6707A /* Build configuration list for PBXProject "RenderPausePro" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 7D08CC60CE7EDDA4B8744A14;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 71B68E83A0A4E96C4F875DEB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A002D40FAA0F77222AD2D709 /* RenderPausePro */,
+				0B94133195AFC94D2DAF6BB3 /* RenderPauseProTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4AC44E1733E0175801AFF509 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C021BB46989E91B31AB7CA83 /* ActionLog.swift in Sources */,
+				1E08D85E07A1F6DC52450E3D /* AppController.swift in Sources */,
+				05AA20B34A5B7C5CDBFC4C82 /* AppDelegate.swift in Sources */,
+				440F4D6696F4C9D68BDCF9C8 /* AppMain.swift in Sources */,
+				D71F1A87E138D297E21AEB5D /* AppRule.swift in Sources */,
+				A626178136D5C5A71EDCD9F0 /* AppSettings.swift in Sources */,
+				81CB0A0290B984B7B63D2C95 /* BundleIdentity.swift in Sources */,
+				007442C7FDC8481EA4C36B7D /* HideActuator.swift in Sources */,
+				29CC8D6D8B6CDCB7ED0E4C82 /* IdleSensor.swift in Sources */,
+				E2F454A7CD697680B13AF0DC /* LaunchAtLogin.swift in Sources */,
+				A016DB5CE06C5A413FCCCDA8 /* LogEntry.swift in Sources */,
+				C2971429796116368438E5B6 /* MenuBarController.swift in Sources */,
+				8FEF15B71D2CFCC044810673 /* MinimizeActuator.swift in Sources */,
+				44B30DD1B5D5F294A15BF60E /* OnboardingViewController.swift in Sources */,
+				BA0160E6E273524301D2D6C8 /* PermissionGate.swift in Sources */,
+				822E4D674AD634AA9A67DA0F /* PolicyDecision.swift in Sources */,
+				5B8F93396F1DBBF1500F5E80 /* PolicyEngine.swift in Sources */,
+				0E6E4347883EEF13C2BA299A /* PreferencesViewController.swift in Sources */,
+				C12454349B072797356A9641 /* PreferencesWindowController.swift in Sources */,
+				0C2D36D24362D78A99FFEAA4 /* RestoreCoordinator.swift in Sources */,
+				390FD1CD481911F78146C9DC /* RuleStore.swift in Sources */,
+				75EBFCCD1C626F882AFADDE9 /* RunningAppPickerViewController.swift in Sources */,
+				FB8311CFCFBE62DDE48D1FDA /* SessionStore.swift in Sources */,
+				05266BE31AC38861008450AE /* SettingsStore.swift in Sources */,
+				00724BCEDBA4FB6D8C131520 /* WatchState.swift in Sources */,
+				D274F8DA0F0012D5C8D898D4 /* WorkspaceSensor.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8AEE174005B0A1F9200172ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				80DAB8C242B97EE224EFCEE9 /* PolicyEngineTests.swift in Sources */,
+				3A37D995BC76E3D6A25FD8C7 /* RuleStoreTests.swift in Sources */,
+				672884A7EF1A21504A58FE22 /* SessionStoreTests.swift in Sources */,
+				39B93051934958D1B697318B /* SettingsStoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FECBC81A49D0B28E50853E12 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A002D40FAA0F77222AD2D709 /* RenderPausePro */;
+			targetProxy = BD9F05A970E03755AEA014BF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		01AE306B1AAA30776B711ED5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RenderPausePro/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.renderpause.pro;
+				PRODUCT_MODULE_NAME = RenderPausePro;
+				PRODUCT_NAME = RenderPausePro;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				VALID_ARCHS = arm64;
+			};
+			name = Release;
+		};
+		1A2A56680E9D0262D3E92A4F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.renderpause.pro.tests;
+				PRODUCT_MODULE_NAME = RenderPauseProTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RenderPausePro.app/Contents/MacOS/RenderPausePro";
+			};
+			name = Release;
+		};
+		5D229CAA5AE5D0E17067FB53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.renderpause.pro.tests;
+				PRODUCT_MODULE_NAME = RenderPauseProTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RenderPausePro.app/Contents/MacOS/RenderPausePro";
+			};
+			name = Debug;
+		};
+		61EE76E096C19B6DE62E6F20 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		71EBE645531CA30E5DB14F47 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		D3027478F680872914EF02B1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = arm64;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RenderPausePro/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.renderpause.pro;
+				PRODUCT_MODULE_NAME = RenderPausePro;
+				PRODUCT_NAME = RenderPausePro;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				VALID_ARCHS = arm64;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		27596683760BAA8F20A6707A /* Build configuration list for PBXProject "RenderPausePro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				61EE76E096C19B6DE62E6F20 /* Debug */,
+				71EBE645531CA30E5DB14F47 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C1232BE7B92703C5342589BE /* Build configuration list for PBXNativeTarget "RenderPauseProTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5D229CAA5AE5D0E17067FB53 /* Debug */,
+				1A2A56680E9D0262D3E92A4F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E372BD507B4778C1DCCBC36B /* Build configuration list for PBXNativeTarget "RenderPausePro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D3027478F680872914EF02B1 /* Debug */,
+				01AE306B1AAA30776B711ED5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8A890B108A5847DBD4F4D1C8 /* Project object */;
+}

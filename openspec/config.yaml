@@ -1,0 +1,33 @@
+schema: spec-driven
+
+# Project context shown when creating OpenSpec artifacts
+context: |
+  Product: RenderPause Pro – Mac menu bar tool (LSUIElement)
+  Goal: Reduce WindowServer GPU composition cost by auto-hiding/minimizing opted-in idle apps
+  Platform: macOS Tahoe 26+, Apple Silicon arm64 only
+  Distribution: Developer ID + notarization later; NOT Mac App Store (no App Sandbox)
+  Stack: Swift, AppKit, ApplicationServices (AX), CoreGraphics (idle), ServiceManagement (login item)
+  Source docs: PRD.md (v0.2), docs/MVP-Architecture.md
+  MVP scope only (Phase 1): window-layer hide/minimize; no SIGSTOP, no GPU metrics, no occlusion
+  Defaults: opt-in empty rules; action=hide; idle=30s; restore-on-activate; restore-all-on-quit
+  Skills during implementation (when useful):
+    - superpowers:executing-plans or subagent-driven-development for task execution
+    - superpowers:test-driven-development for PolicyEngine / stores
+    - superpowers:verification-before-completion before claiming done
+    - superpowers:systematic-debugging for hide/AX failures
+    - impeccable for Preferences/onboarding UI polish (product/utility register) after core works
+
+rules:
+  proposal:
+    - Keep under ~500 words
+    - Align with PRD.md non-goals (no Metal inject, no SIGSTOP in MVP)
+  design:
+    - Prefer public APIs only
+    - Reference docs/MVP-Architecture.md module map
+  tasks:
+    - Checkbox format only (- [ ] X.Y ...)
+    - Note when superpowers TDD or impeccable apply
+    - MVP first; no Phase 2/3 tasks unless explicitly optional
+  specs:
+    - Use SHALL/MUST
+    - Every requirement needs #### Scenario with WHEN/THEN
