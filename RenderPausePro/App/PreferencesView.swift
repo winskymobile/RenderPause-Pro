@@ -1,7 +1,115 @@
 import AppKit
 import SwiftUI
 
+private enum PreferencesTab: String, CaseIterable, Identifiable {
+    case apps = "应用名单"
+    case settings = "设置"
+    case activity = "最近活动"
+
+    var id: String { rawValue }
+}
+
 struct PreferencesView: View {
+    @ObservedObject var model: UIAppModel
+    @State private var tab: PreferencesTab = .apps
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Picker("", selection: $tab) {
+                ForEach(PreferencesTab.allCases) { item in
+                    Text(item.rawValue).tag(item)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 12)
+
+            Divider()
+
+            Group {
+                switch tab {
+                case .apps:
+                    AppsTabView(model: model)
+                case .settings:
+                    SettingsTabView(model: model)
+                case .activity:
+                    ActivityTabView(model: model)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }
+        .frame(minWidth: 520, idealWidth: 540, minHeight: 520, idealHeight: 560)
+        .onAppear { model.refresh() }
+    }
+}
+
+// MARK: - Tab 1: Apps
+
+private struct AppsTabView: View {
+    @ObservedObject var model: UIAppModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("应用名单")
+                        .font(.title3.weight(.semibold))
+                    Text("仅名单内的应用会在离开前台后被自动优化。")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                HStack(spacing: 8) {
+                    Button("添加…") { model.addRunningApps() }
+                    Button("移除") { model.removeSelectedRules() }
+                        .disabled(model.selectedRuleIDs.isEmpty)
+                }
+                .controlSize(.regular)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 18)
+            .padding(.bottom, 12)
+
+            if model.rules.isEmpty {
+                VStack(spacing: 12) {
+                    Spacer(minLength: 24)
+                    Image(systemName: "app.badge.checkmark")
+                        .font(.system(size: 36, weight: .regular))
+                        .foregroundStyle(.tertiary)
+                    Text("还没有应用")
+                        .font(.body.weight(.medium))
+                    Text("添加需要在后台自动隐藏或最小化的应用。")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 280)
+                    Button("添加应用…") { model.addRunningApps() }
+                        .buttonStyle(.borderedProminent)
+                        .padding(.top, 4)
+                    Spacer(minLength: 24)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.horizontal, 20)
+            } else {
+                List(selection: $model.selectedRuleIDs) {
+                    ForEach(model.rules) { rule in
+                        RuleRowView(model: model, rule: rule)
+                            .tag(rule.bundleID)
+                    }
+                }
+                .listStyle(.inset(alternatesRowBackgrounds: true))
+                .padding(.horizontal, 12)
+                .padding(.bottom, 12)
+            }
+        }
+    }
+}
+
+// MARK: - Tab 2: Settings
+
+private struct SettingsTabView: View {
     @ObservedObject var model: UIAppModel
 
     var body: some View {
@@ -17,22 +125,17 @@ struct PreferencesView: View {
                 Text("状态")
             } footer: {
                 Text("关闭监控后不会再自动隐藏或最小化名单中的应用。")
-                    .foregroundStyle(.secondary)
             }
 
             Section {
                 HStack {
                     Text("后台满")
                     Spacer()
-                    TextField(
-                        "",
-                        value: backgroundSecondsBinding,
-                        format: .number
-                    )
-                    .labelsHidden()
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: 56)
-                    .textFieldStyle(.roundedBorder)
+                    TextField("", value: backgroundSecondsBinding, format: .number)
+                        .labelsHidden()
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 56)
+                        .textFieldStyle(.roundedBorder)
                     Stepper("", value: backgroundSecondsBinding, in: 5...600, step: 5)
                         .labelsHidden()
                     Text("秒后优化")
@@ -43,7 +146,6 @@ struct PreferencesView: View {
                 Text("通用")
             } footer: {
                 Text("应用离开前台并达到该秒数后才会优化；输入法与分屏伙伴不会误触发。范围 5–600 秒。")
-                    .foregroundStyle(.secondary)
             }
 
             Section {
@@ -62,79 +164,13 @@ struct PreferencesView: View {
             } header: {
                 Text("权限")
             }
-
-            Section {
-                if model.rules.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("还没有应用")
-                            .font(.body.weight(.medium))
-                        Text("添加需要在后台自动隐藏或最小化的应用。默认不会优化任何应用。")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                        Button("添加应用…") {
-                            model.addRunningApps()
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.regular)
-                        .padding(.top, 4)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 8)
-                } else {
-                    List(selection: $model.selectedRuleIDs) {
-                        ForEach(model.rules) { rule in
-                            RuleRowView(model: model, rule: rule)
-                                .tag(rule.bundleID)
-                        }
-                    }
-                    .frame(minHeight: 180, maxHeight: 240)
-                    .listStyle(.inset(alternatesRowBackgrounds: true))
-
-                    HStack(spacing: 10) {
-                        Button("添加…") { model.addRunningApps() }
-                        Button("移除") { model.removeSelectedRules() }
-                            .disabled(model.selectedRuleIDs.isEmpty)
-                        Spacer()
-                    }
-                    .controlSize(.regular)
-                }
-            } header: {
-                Text("应用名单")
-            } footer: {
-                Text("名单内的应用才会被优化。策略为「隐藏」或「最小化」。")
-                    .foregroundStyle(.secondary)
-            }
-
-            Section {
-                if model.logEntries.isEmpty {
-                    Text("暂无活动记录")
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.vertical, 6)
-                } else {
-                    List {
-                        ForEach(model.logEntries.prefix(12)) { entry in
-                            LogRowView(entry: entry)
-                        }
-                    }
-                    .frame(minHeight: 120, maxHeight: 160)
-                    .listStyle(.inset(alternatesRowBackgrounds: true))
-                }
-            } header: {
-                Text("最近活动")
-            }
         }
         .formStyle(.grouped)
         .padding(.vertical, 8)
-        .frame(minWidth: 500, idealWidth: 520, minHeight: 600, idealHeight: 640)
-        .onAppear { model.refresh() }
     }
 
     private var statusSummary: String {
-        let n = model.todayOptimizeCount
-        let s = Int(model.settings.backgroundSeconds)
-        return "今日 \(n) 次 · 后台 \(s) 秒"
+        "今日 \(model.todayOptimizeCount) 次 · 后台 \(Int(model.settings.backgroundSeconds)) 秒"
     }
 
     private var monitoringBinding: Binding<Bool> {
@@ -158,6 +194,54 @@ struct PreferencesView: View {
         )
     }
 }
+
+// MARK: - Tab 3: Activity
+
+private struct ActivityTabView: View {
+    @ObservedObject var model: UIAppModel
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("最近活动")
+                        .font(.title3.weight(.semibold))
+                    Text("记录自动优化、恢复与错误。")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 18)
+            .padding(.bottom, 12)
+
+            if model.logEntries.isEmpty {
+                VStack(spacing: 10) {
+                    Spacer(minLength: 24)
+                    Image(systemName: "clock")
+                        .font(.system(size: 32))
+                        .foregroundStyle(.tertiary)
+                    Text("暂无活动记录")
+                        .foregroundStyle(.secondary)
+                    Spacer(minLength: 24)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List {
+                    ForEach(model.logEntries) { entry in
+                        LogRowView(entry: entry)
+                    }
+                }
+                .listStyle(.inset(alternatesRowBackgrounds: true))
+                .padding(.horizontal, 12)
+                .padding(.bottom, 12)
+            }
+        }
+    }
+}
+
+// MARK: - Rows
 
 private struct RuleRowView: View {
     @ObservedObject var model: UIAppModel
@@ -222,11 +306,11 @@ private struct LogRowView: View {
             Text(timeString)
                 .font(.caption.monospacedDigit())
                 .foregroundStyle(.secondary)
-                .frame(width: 54, alignment: .leading)
+                .frame(width: 58, alignment: .leading)
             Text(entry.displayName)
                 .font(.callout)
                 .lineLimit(1)
-                .frame(width: 100, alignment: .leading)
+                .frame(minWidth: 88, idealWidth: 110, maxWidth: 140, alignment: .leading)
             Text(eventLabel)
                 .font(.callout)
                 .foregroundStyle(.secondary)
@@ -237,7 +321,7 @@ private struct LogRowView: View {
                 .foregroundStyle(.tertiary)
                 .lineLimit(1)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, 3)
     }
 
     private var timeString: String {

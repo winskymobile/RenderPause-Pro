@@ -9,15 +9,15 @@ final class PreferencesWindowController: NSWindowController {
         self.model = UIAppModel(controller: controller)
         let hosting = NSHostingController(rootView: PreferencesView(model: model))
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 520, height: 640),
+            contentRect: NSRect(x: 0, y: 0, width: 540, height: 560),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false
         )
-        window.title = "RenderPause Pro 偏好设置"
+        window.title = "RenderPause Pro"
         window.contentViewController = hosting
-        window.setContentSize(NSSize(width: 520, height: 640))
-        window.minSize = NSSize(width: 480, height: 560)
+        window.setContentSize(NSSize(width: 540, height: 560))
+        window.minSize = NSSize(width: 500, height: 480)
         window.center()
         window.isReleasedWhenClosed = false
         super.init(window: window)
