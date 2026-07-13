@@ -65,7 +65,7 @@ final class AppController {
         let ids = Set(ruleStore.rules.map(\.bundleID))
         let running = workspace.snapshots(for: ids)
         let commands = engine.evaluate(
-            frontmostBundleID: workspace.frontmostBundleID(),
+            frontmostBundleID: workspace.regularFrontmostBundleID(),
             running: running
         )
         apply(commands)
@@ -91,6 +91,11 @@ final class AppController {
                 }
             case .optimize(let id, let action, let reason):
                 guard let app = workspace.runningApp(bundleID: id) else { continue }
+                // Hard safety: never hide/minimize the effective regular frontmost app.
+                if workspace.regularFrontmostBundleID() == id || app.isActive {
+                    sessionStore.set(id, .watched)
+                    continue
+                }
                 if let err = RestoreCoordinator.optimize(app: app, action: action) {
                     actionLog.append(LogEntry(
                         bundleID: id,

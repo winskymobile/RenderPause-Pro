@@ -48,6 +48,7 @@ final class PolicyEngine {
                 continue
             }
 
+            // Snapshot.isActive is already "effective regular front" from WorkspaceSensor.
             let isFront = app.isActive || frontmostBundleID == rule.bundleID
 
             if isFront {

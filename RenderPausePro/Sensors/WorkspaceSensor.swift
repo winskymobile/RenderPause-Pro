@@ -5,13 +5,17 @@ final class WorkspaceSensor {
     var onChange: (() -> Void)?
 
     private var observers: [NSObjectProtocol] = []
-    /// bundleID -> time when app last left frontmost/active
+    /// bundleID -> time when app last left *regular* foreground
     private var deactivatedAt: [String: Date] = [:]
-    private var lastFrontmost: String?
+    /// Last frontmost app with regular activation policy (ignores IME / agents / menu bar).
+    private var lastRegularFrontmost: String?
 
     func start() {
         stop()
-        lastFrontmost = frontmostBundleID()
+        lastRegularFrontmost = regularFrontmostBundleID()
+        if let id = lastRegularFrontmost {
+            deactivatedAt.removeValue(forKey: id)
+        }
         let nc = NSWorkspace.shared.notificationCenter
         let names: [NSNotification.Name] = [
             NSWorkspace.didActivateApplicationNotification,
@@ -36,54 +40,78 @@ final class WorkspaceSensor {
     }
 
     private func handle(_ note: Notification) {
-        let current = frontmostBundleID()
-        if let previous = lastFrontmost, previous != current {
-            // previous left foreground
-            if deactivatedAt[previous] == nil {
-                deactivatedAt[previous] = Date()
+        let previousRegular = lastRegularFrontmost
+        let currentRegular = regularFrontmostBundleID()
+
+        // Only treat switches between *regular* apps as leaving the foreground.
+        // Input methods (WeType), menu bar tools, and other agents must NOT
+        // start the background timer for the app the user is still working in.
+        if let previousRegular, previousRegular != currentRegular {
+            if deactivatedAt[previousRegular] == nil {
+                deactivatedAt[previousRegular] = Date()
             }
         }
-        if let current {
-            // currently frontmost: clear background timer
-            deactivatedAt.removeValue(forKey: current)
+        if let currentRegular {
+            deactivatedAt.removeValue(forKey: currentRegular)
         }
-        // If notification carries an app that deactivated, stamp it.
-        if note.name == NSWorkspace.didDeactivateApplicationNotification,
-           let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
-           let id = app.bundleIdentifier,
-           id != current {
-            if deactivatedAt[id] == nil {
-                deactivatedAt[id] = Date()
-            }
-        }
+
         if note.name == NSWorkspace.didActivateApplicationNotification,
            let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
-           let id = app.bundleIdentifier {
+           let id = app.bundleIdentifier,
+           app.activationPolicy == .regular {
             deactivatedAt.removeValue(forKey: id)
-        }
-        if note.name == NSWorkspace.didTerminateApplicationNotification,
-           let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
-           let id = app.bundleIdentifier {
+            lastRegularFrontmost = id
+        } else if note.name == NSWorkspace.didTerminateApplicationNotification,
+                  let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
+                  let id = app.bundleIdentifier {
             deactivatedAt.removeValue(forKey: id)
+            if lastRegularFrontmost == id {
+                lastRegularFrontmost = currentRegular
+            }
+        } else {
+            lastRegularFrontmost = currentRegular ?? previousRegular
         }
-        lastFrontmost = current
+
         onChange?()
     }
 
+    /// Raw system frontmost (may be IME / agent).
     func frontmostBundleID() -> String? {
         NSWorkspace.shared.frontmostApplication?.bundleIdentifier
     }
 
+    /// Frontmost among regular GUI apps only.
+    func regularFrontmostBundleID() -> String? {
+        let front = NSWorkspace.shared.frontmostApplication
+        if let front, front.activationPolicy == .regular, let id = front.bundleIdentifier {
+            return id
+        }
+        // If an agent/IME is frontmost, keep the last regular frontmost if still running.
+        if let last = lastRegularFrontmost,
+           runningApp(bundleID: last) != nil {
+            return last
+        }
+        // Fallback: first active regular app.
+        return NSWorkspace.shared.runningApplications.first {
+            $0.isActive && $0.activationPolicy == .regular && $0.bundleIdentifier != nil
+        }?.bundleIdentifier
+    }
+
     func snapshots(for bundleIDs: Set<String>, now: Date = Date()) -> [RunningAppSnapshot] {
-        let front = frontmostBundleID()
+        let effectiveFront = regularFrontmostBundleID()
         return NSWorkspace.shared.runningApplications.compactMap { app in
             guard let id = app.bundleIdentifier, bundleIDs.contains(id) else { return nil }
-            let isFront = app.isActive || front == id
+            // Prefer regular process flags; helpers sharing the same bundle are rare.
+            let isFront = (effectiveFront == id) || (app.isActive && app.activationPolicy == .regular)
             if isFront {
                 deactivatedAt.removeValue(forKey: id)
             } else if deactivatedAt[id] == nil {
-                // First time we observe it in background (e.g. already background at launch)
-                deactivatedAt[id] = now
+                // Only start the clock after we have an established regular frontmost
+                // that is *someone else*. Avoid starting timers when frontmost is unknown
+                // (nil) during IME-only focus transitions.
+                if let effectiveFront, effectiveFront != id {
+                    deactivatedAt[id] = now
+                }
             }
             let since: TimeInterval
             if isFront {
@@ -95,7 +123,7 @@ final class WorkspaceSensor {
             }
             return RunningAppSnapshot(
                 bundleID: id,
-                isActive: app.isActive,
+                isActive: isFront,
                 isHidden: app.isHidden,
                 isFinished: app.isTerminated,
                 secondsSinceDeactivated: since
@@ -107,7 +135,6 @@ final class WorkspaceSensor {
         let matches = NSWorkspace.shared.runningApplications.filter {
             $0.bundleIdentifier == bundleID && !$0.isTerminated
         }
-        // Prefer regular GUI process over helpers that may share identifiers.
         return matches.first(where: { $0.activationPolicy == .regular }) ?? matches.first
     }
 
