@@ -96,9 +96,10 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
         let addButton = NSButton(title: "添加运行中应用…", target: self, action: #selector(addRunning))
         let removeButton = NSButton(title: "移除", target: self, action: #selector(removeSelected))
         let toggleAction = NSButton(title: "切换策略", target: self, action: #selector(cycleAction))
-        let buttonStack = NSStackView(views: [addButton, removeButton, toggleAction])
+        let buttonStack = NSStackView(views: [addButton, removeButton, toggleAction, thresholdStack])
         buttonStack.orientation = .horizontal
         buttonStack.spacing = 8
+        buttonStack.alignment = .centerY
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
 
         let rulesLabel = NSTextField(labelWithString: "优化名单")
@@ -120,7 +121,7 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
         let logLabel = NSTextField(labelWithString: "最近操作日志")
         logLabel.font = NSFont.boldSystemFont(ofSize: 13)
 
-        let root = NSStackView(views: [topStack, thresholdStack, rulesLabel, rulesScroll, buttonStack, logLabel, logScroll])
+        let root = NSStackView(views: [topStack, rulesLabel, rulesScroll, buttonStack, logLabel, logScroll])
         root.orientation = .vertical
         root.alignment = .leading
         root.spacing = 10
