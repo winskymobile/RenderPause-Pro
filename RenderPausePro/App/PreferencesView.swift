@@ -116,46 +116,34 @@ private struct SettingsTabView: View {
         Form {
             Section {
                 Toggle("启用监控", isOn: monitoringBinding)
-                LabeledContent("状态") {
-                    Text(statusSummary)
+                Toggle("登录时启动", isOn: launchBinding)
+                HStack {
+                    Text("后台满")
+                    Spacer(minLength: 8)
+                    TextField("", value: backgroundSecondsBinding, format: .number)
+                        .labelsHidden()
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 48)
+                        .textFieldStyle(.roundedBorder)
+                        .controlSize(.small)
+                    Stepper("", value: backgroundSecondsBinding, in: 5...600, step: 5)
+                        .labelsHidden()
+                        .controlSize(.small)
+                    Text("秒")
+                        .foregroundStyle(.secondary)
+                }
+                LabeledContent("今日优化") {
+                    Text("\(model.todayOptimizeCount) 次")
                         .foregroundStyle(.secondary)
                         .font(.body.monospacedDigit())
                 }
             } header: {
-                Text("状态")
-            } footer: {
-                Text("关闭监控后不会再自动隐藏或最小化名单中的应用。")
-            }
-
-            Section {
-                HStack {
-                    Text("后台满")
-                    Spacer()
-                    TextField("", value: backgroundSecondsBinding, format: .number)
-                        .labelsHidden()
-                        .multilineTextAlignment(.trailing)
-                        .frame(width: 56)
-                        .textFieldStyle(.roundedBorder)
-                    Stepper("", value: backgroundSecondsBinding, in: 5...600, step: 5)
-                        .labelsHidden()
-                    Text("秒后优化")
-                        .foregroundStyle(.secondary)
-                }
-                Toggle("登录时启动", isOn: launchBinding)
-            } header: {
                 Text("通用")
-            } footer: {
-                Text("应用离开前台并达到该秒数后才会优化；输入法与分屏伙伴不会误触发。范围 5–600 秒。")
             }
 
             Section {
                 LabeledContent("辅助功能") {
                     Text(model.accessibilityTrusted ? "已授权" : "未授权")
-                        .foregroundStyle(model.accessibilityTrusted ? .secondary : .primary)
-                }
-                if !model.accessibilityTrusted {
-                    Text("最小化策略需要辅助功能权限；隐藏策略不需要。")
-                        .font(.callout)
                         .foregroundStyle(.secondary)
                 }
                 Button("打开系统设置…") {
@@ -163,14 +151,12 @@ private struct SettingsTabView: View {
                 }
             } header: {
                 Text("权限")
+            } footer: {
+                Text("仅「最小化」策略需要辅助功能；「隐藏」不需要。")
             }
         }
         .formStyle(.grouped)
-        .padding(.vertical, 8)
-    }
-
-    private var statusSummary: String {
-        "今日 \(model.todayOptimizeCount) 次 · 后台 \(Int(model.settings.backgroundSeconds)) 秒"
+        .padding(.vertical, 4)
     }
 
     private var monitoringBinding: Binding<Bool> {
