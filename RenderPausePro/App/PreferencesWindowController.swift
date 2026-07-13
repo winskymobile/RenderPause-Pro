@@ -1,21 +1,25 @@
 import AppKit
+import SwiftUI
 
+@MainActor
 final class PreferencesWindowController: NSWindowController {
-    private weak var controller: AppController?
+    private let model: UIAppModel
 
     init(controller: AppController) {
-        self.controller = controller
-        let vc = PreferencesViewController(controller: controller)
+        self.model = UIAppModel(controller: controller)
+        let hosting = NSHostingController(rootView: PreferencesView(model: model))
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 760, height: 540),
+            contentRect: NSRect(x: 0, y: 0, width: 520, height: 640),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false
         )
         window.title = "RenderPause Pro 偏好设置"
-        window.contentViewController = vc
+        window.contentViewController = hosting
+        window.setContentSize(NSSize(width: 520, height: 640))
+        window.minSize = NSSize(width: 480, height: 560)
         window.center()
-        window.minSize = NSSize(width: 640, height: 420)
+        window.isReleasedWhenClosed = false
         super.init(window: window)
     }
 
@@ -25,8 +29,8 @@ final class PreferencesWindowController: NSWindowController {
     }
 
     func show() {
+        model.refresh()
         window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
-        (contentViewController as? PreferencesViewController)?.reload()
     }
 }

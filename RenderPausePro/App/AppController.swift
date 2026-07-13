@@ -1,6 +1,8 @@
 import AppKit
 import Foundation
+import SwiftUI
 
+@MainActor
 final class AppController {
     static let shared = AppController()
 
@@ -161,15 +163,17 @@ final class AppController {
     }
 
     func showOnboarding() {
-        let vc = OnboardingViewController(controller: self)
+        let model = UIAppModel(controller: self)
+        let hosting = NSHostingController(rootView: OnboardingView(model: model))
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 480, height: 360),
+            contentRect: NSRect(x: 0, y: 0, width: 440, height: 380),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
         )
         window.title = "欢迎使用 RenderPause Pro"
-        window.contentViewController = vc
+        window.contentViewController = hosting
+        window.setContentSize(NSSize(width: 440, height: 380))
         window.center()
         window.isReleasedWhenClosed = false
         onboardingWindow = window
