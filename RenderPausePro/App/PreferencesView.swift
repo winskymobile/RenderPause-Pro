@@ -132,11 +132,6 @@ private struct SettingsTabView: View {
                     Text("秒")
                         .foregroundStyle(.secondary)
                 }
-                LabeledContent("今日优化") {
-                    Text("\(model.todayOptimizeCount) 次")
-                        .foregroundStyle(.secondary)
-                        .font(.body.monospacedDigit())
-                }
             } header: {
                 Text("通用")
             }
@@ -146,13 +141,18 @@ private struct SettingsTabView: View {
                     Text(model.accessibilityTrusted ? "已授权" : "未授权")
                         .foregroundStyle(.secondary)
                 }
-                Button("打开系统设置…") {
-                    model.openAccessibilitySettings()
+                HStack(alignment: .center, spacing: 12) {
+                    Button("打开系统设置…") {
+                        model.openAccessibilitySettings()
+                    }
+                    Text("仅「最小化」策略需要辅助功能；「隐藏」不需要。")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 0)
                 }
             } header: {
                 Text("权限")
-            } footer: {
-                Text("仅「最小化」策略需要辅助功能；「隐藏」不需要。")
             }
         }
         .formStyle(.grouped)
@@ -197,6 +197,9 @@ private struct ActivityTabView: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
+                Text("今日 \(model.todayOptimizeCount) 次")
+                    .font(.callout.monospacedDigit())
+                    .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 20)
             .padding(.top, 18)
