@@ -5,7 +5,7 @@ final class WorkspaceSensor {
     var onChange: (() -> Void)?
 
     private var observers: [NSObjectProtocol] = []
-    /// bundleID -> time when app last left *regular* foreground
+    /// bundleID -> time when app last left *usable* foreground (not split partner)
     private var deactivatedAt: [String: Date] = [:]
     /// Last frontmost app with regular activation policy (ignores IME / agents / menu bar).
     private var lastRegularFrontmost: String?
@@ -23,7 +23,8 @@ final class WorkspaceSensor {
             NSWorkspace.didHideApplicationNotification,
             NSWorkspace.didUnhideApplicationNotification,
             NSWorkspace.didLaunchApplicationNotification,
-            NSWorkspace.didTerminateApplicationNotification
+            NSWorkspace.didTerminateApplicationNotification,
+            NSWorkspace.activeSpaceDidChangeNotification
         ]
         for name in names {
             let token = nc.addObserver(forName: name, object: nil, queue: .main) { [weak self] note in
@@ -43,12 +44,18 @@ final class WorkspaceSensor {
         let previousRegular = lastRegularFrontmost
         let currentRegular = regularFrontmostBundleID()
 
-        // Only treat switches between *regular* apps as leaving the foreground.
-        // Input methods (WeType), menu bar tools, and other agents must NOT
-        // start the background timer for the app the user is still working in.
         if let previousRegular, previousRegular != currentRegular {
-            if deactivatedAt[previousRegular] == nil {
+            // Do not start the timer if the previous app is still a Split View partner
+            // of the newly focused regular app.
+            let stillSplit = SplitViewDetector.isSplitPartner(
+                candidateBundleID: previousRegular,
+                frontmostBundleID: currentRegular
+            )
+            if !stillSplit, deactivatedAt[previousRegular] == nil {
                 deactivatedAt[previousRegular] = Date()
+            }
+            if stillSplit {
+                deactivatedAt.removeValue(forKey: previousRegular)
             }
         }
         if let currentRegular {
@@ -68,6 +75,12 @@ final class WorkspaceSensor {
             if lastRegularFrontmost == id {
                 lastRegularFrontmost = currentRegular
             }
+        } else if note.name == NSWorkspace.activeSpaceDidChangeNotification {
+            // Space / Split View space changes can reshuffle focus; re-evaluate partners.
+            lastRegularFrontmost = currentRegular ?? previousRegular
+            if let currentRegular {
+                deactivatedAt.removeValue(forKey: currentRegular)
+            }
         } else {
             lastRegularFrontmost = currentRegular ?? previousRegular
         }
@@ -75,23 +88,19 @@ final class WorkspaceSensor {
         onChange?()
     }
 
-    /// Raw system frontmost (may be IME / agent).
     func frontmostBundleID() -> String? {
         NSWorkspace.shared.frontmostApplication?.bundleIdentifier
     }
 
-    /// Frontmost among regular GUI apps only.
     func regularFrontmostBundleID() -> String? {
         let front = NSWorkspace.shared.frontmostApplication
         if let front, front.activationPolicy == .regular, let id = front.bundleIdentifier {
             return id
         }
-        // If an agent/IME is frontmost, keep the last regular frontmost if still running.
         if let last = lastRegularFrontmost,
            runningApp(bundleID: last) != nil {
             return last
         }
-        // Fallback: first active regular app.
         return NSWorkspace.shared.runningApplications.first {
             $0.isActive && $0.activationPolicy == .regular && $0.bundleIdentifier != nil
         }?.bundleIdentifier
@@ -99,20 +108,29 @@ final class WorkspaceSensor {
 
     func snapshots(for bundleIDs: Set<String>, now: Date = Date()) -> [RunningAppSnapshot] {
         let effectiveFront = regularFrontmostBundleID()
+        let windows = SplitViewDetector.listOnScreenWindows()
+        let splitPartners = SplitViewDetector.splitPartnerBundleIDs(
+            frontmostBundleID: effectiveFront,
+            among: bundleIDs,
+            windows: windows
+        )
+
         return NSWorkspace.shared.runningApplications.compactMap { app in
             guard let id = app.bundleIdentifier, bundleIDs.contains(id) else { return nil }
-            // Prefer regular process flags; helpers sharing the same bundle are rare.
-            let isFront = (effectiveFront == id) || (app.isActive && app.activationPolicy == .regular)
+
+            let isSystemFront = (effectiveFront == id) || (app.isActive && app.activationPolicy == .regular)
+            let isSplitPartner = splitPartners.contains(id)
+            // Treat Split View partners as still "in use" / foreground-equivalent.
+            let isFront = isSystemFront || isSplitPartner
+
             if isFront {
                 deactivatedAt.removeValue(forKey: id)
             } else if deactivatedAt[id] == nil {
-                // Only start the clock after we have an established regular frontmost
-                // that is *someone else*. Avoid starting timers when frontmost is unknown
-                // (nil) during IME-only focus transitions.
                 if let effectiveFront, effectiveFront != id {
                     deactivatedAt[id] = now
                 }
             }
+
             let since: TimeInterval
             if isFront {
                 since = 0
@@ -121,6 +139,7 @@ final class WorkspaceSensor {
             } else {
                 since = 0
             }
+
             return RunningAppSnapshot(
                 bundleID: id,
                 isActive: isFront,
@@ -136,6 +155,16 @@ final class WorkspaceSensor {
             $0.bundleIdentifier == bundleID && !$0.isTerminated
         }
         return matches.first(where: { $0.activationPolicy == .regular }) ?? matches.first
+    }
+
+    /// True when the bundle currently looks like a Split View partner of the regular frontmost app.
+    func isProtectedFromOptimize(bundleID: String) -> Bool {
+        if regularFrontmostBundleID() == bundleID { return true }
+        if let app = runningApp(bundleID: bundleID), app.isActive { return true }
+        return SplitViewDetector.isSplitPartner(
+            candidateBundleID: bundleID,
+            frontmostBundleID: regularFrontmostBundleID()
+        )
     }
 
     deinit { stop() }

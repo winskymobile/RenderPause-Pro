@@ -91,8 +91,8 @@ final class AppController {
                 }
             case .optimize(let id, let action, let reason):
                 guard let app = workspace.runningApp(bundleID: id) else { continue }
-                // Hard safety: never hide/minimize the effective regular frontmost app.
-                if workspace.regularFrontmostBundleID() == id || app.isActive {
+                // Hard safety: never hide/minimize frontmost or Split View partner apps.
+                if workspace.isProtectedFromOptimize(bundleID: id) {
                     sessionStore.set(id, .watched)
                     continue
                 }

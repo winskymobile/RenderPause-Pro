@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		00724BCEDBA4FB6D8C131520 /* WatchState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1408325638D1785E3574B9 /* WatchState.swift */; };
 		007442C7FDC8481EA4C36B7D /* HideActuator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4537BC127D394D6AD3D75182 /* HideActuator.swift */; };
+		0494D1ABCC16E38070888076 /* SplitViewDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DFEA4AC302581B808419B9 /* SplitViewDetector.swift */; };
 		05266BE31AC38861008450AE /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0635E6ECFF2514877AB6403 /* SettingsStore.swift */; };
 		05AA20B34A5B7C5CDBFC4C82 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9273E8CA87944A15259C2DA /* AppDelegate.swift */; };
 		0C2D36D24362D78A99FFEAA4 /* RestoreCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 555C71A3436007DD1442BEDA /* RestoreCoordinator.swift */; };
@@ -36,6 +37,7 @@
 		D274F8DA0F0012D5C8D898D4 /* WorkspaceSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52379DC05A04627E46DA78D8 /* WorkspaceSensor.swift */; };
 		D71F1A87E138D297E21AEB5D /* AppRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32789D5C65C1DFD2B715FB13 /* AppRule.swift */; };
 		E2F454A7CD697680B13AF0DC /* LaunchAtLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54CFDC444BED620FEDF1DF77 /* LaunchAtLogin.swift */; };
+		F0E2CF7504524FDB8F783D89 /* SplitViewDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7597C53FDC750A8E16BDC8B2 /* SplitViewDetectorTests.swift */; };
 		FB8311CFCFBE62DDE48D1FDA /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CE59903C954149C2F9BECA /* SessionStore.swift */; };
 /* End PBXBuildFile section */
 
@@ -62,12 +64,14 @@
 		4537BC127D394D6AD3D75182 /* HideActuator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideActuator.swift; sourceTree = "<group>"; };
 		495F9B204DE93123710F436C /* SessionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStoreTests.swift; sourceTree = "<group>"; };
 		52379DC05A04627E46DA78D8 /* WorkspaceSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSensor.swift; sourceTree = "<group>"; };
+		53DFEA4AC302581B808419B9 /* SplitViewDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewDetector.swift; sourceTree = "<group>"; };
 		54CFDC444BED620FEDF1DF77 /* LaunchAtLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLogin.swift; sourceTree = "<group>"; };
 		555C71A3436007DD1442BEDA /* RestoreCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreCoordinator.swift; sourceTree = "<group>"; };
 		567932766CE446CDD0C084AC /* RenderPauseProTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RenderPauseProTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BC24A69903DB21B8B8A3361 /* PolicyDecision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyDecision.swift; sourceTree = "<group>"; };
 		6F0229236AAF9CA11057561E /* LogEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogEntry.swift; sourceTree = "<group>"; };
 		7276DAE93EF4463DE4467D09 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		7597C53FDC750A8E16BDC8B2 /* SplitViewDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewDetectorTests.swift; sourceTree = "<group>"; };
 		82BD501BE542D1DB5D1044E0 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		84CE59903C954149C2F9BECA /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
 		A7F6388F582F87AA4E9EAC7B /* PolicyEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyEngineTests.swift; sourceTree = "<group>"; };
@@ -150,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				DC01D1A5C53CC1A99848BFC9 /* IdleSensor.swift */,
+				53DFEA4AC302581B808419B9 /* SplitViewDetector.swift */,
 				52379DC05A04627E46DA78D8 /* WorkspaceSensor.swift */,
 			);
 			path = Sensors;
@@ -209,6 +214,7 @@
 				240A3217BEC48AD5A8A6275F /* RuleStoreTests.swift */,
 				495F9B204DE93123710F436C /* SessionStoreTests.swift */,
 				3E1DABFC407881931066A2EC /* SettingsStoreTests.swift */,
+				7597C53FDC750A8E16BDC8B2 /* SplitViewDetectorTests.swift */,
 			);
 			path = RenderPauseProTests;
 			sourceTree = "<group>";
@@ -314,6 +320,7 @@
 				75EBFCCD1C626F882AFADDE9 /* RunningAppPickerViewController.swift in Sources */,
 				FB8311CFCFBE62DDE48D1FDA /* SessionStore.swift in Sources */,
 				05266BE31AC38861008450AE /* SettingsStore.swift in Sources */,
+				0494D1ABCC16E38070888076 /* SplitViewDetector.swift in Sources */,
 				00724BCEDBA4FB6D8C131520 /* WatchState.swift in Sources */,
 				D274F8DA0F0012D5C8D898D4 /* WorkspaceSensor.swift in Sources */,
 			);
@@ -327,6 +334,7 @@
 				3A37D995BC76E3D6A25FD8C7 /* RuleStoreTests.swift in Sources */,
 				672884A7EF1A21504A58FE22 /* SessionStoreTests.swift in Sources */,
 				39B93051934958D1B697318B /* SettingsStoreTests.swift in Sources */,
+				F0E2CF7504524FDB8F783D89 /* SplitViewDetectorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
