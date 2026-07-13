@@ -17,28 +17,43 @@ struct AppRule: Codable, Identifiable, Equatable, Sendable {
     var displayName: String
     var enabled: Bool
     var action: OptimizeAction
-    var idleSeconds: TimeInterval
-    var locked: Bool
 
     var id: String { bundleID }
 
-    static let idleRange: ClosedRange<TimeInterval> = 5...600
-    static let defaultIdle: TimeInterval = 30
-
-    mutating func normalize() {
-        idleSeconds = min(max(idleSeconds, Self.idleRange.lowerBound), Self.idleRange.upperBound)
-    }
-
     static func makeNew(bundleID: String, displayName: String) -> AppRule {
-        var rule = AppRule(
+        AppRule(
             bundleID: bundleID,
             displayName: displayName,
             enabled: true,
-            action: .hide,
-            idleSeconds: defaultIdle,
-            locked: false
+            action: .hide
         )
-        rule.normalize()
-        return rule
+    }
+
+    /// Tolerate legacy payloads that still contain idleSeconds/locked.
+    init(bundleID: String, displayName: String, enabled: Bool, action: OptimizeAction) {
+        self.bundleID = bundleID
+        self.displayName = displayName
+        self.enabled = enabled
+        self.action = action
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        bundleID = try c.decode(String.self, forKey: .bundleID)
+        displayName = try c.decode(String.self, forKey: .displayName)
+        enabled = try c.decodeIfPresent(Bool.self, forKey: .enabled) ?? true
+        action = try c.decodeIfPresent(OptimizeAction.self, forKey: .action) ?? .hide
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case bundleID, displayName, enabled, action
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(bundleID, forKey: .bundleID)
+        try c.encode(displayName, forKey: .displayName)
+        try c.encode(enabled, forKey: .enabled)
+        try c.encode(action, forKey: .action)
     }
 }

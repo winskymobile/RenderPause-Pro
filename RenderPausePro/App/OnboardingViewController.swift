@@ -28,7 +28,7 @@ final class OnboardingViewController: NSViewController {
 
         1. 默认不会优化任何应用，请先把需要的应用加入名单。
         2. 默认策略是「隐藏」；「最小化」需要辅助功能权限。
-        3. 切到其他应用并等待阈值秒数后触发；切回时立即恢复。
+        3. 切到其他应用并等待全局后台秒数（默认 30 秒）后触发；切回时立即恢复。
         """)
         body.font = NSFont.systemFont(ofSize: 13)
 

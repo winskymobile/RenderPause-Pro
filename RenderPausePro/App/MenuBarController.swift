@@ -24,8 +24,9 @@ final class MenuBarController: NSObject {
 
         let monitoring = controller.settingsStore.settings.monitoringEnabled
         let count = controller.actionLog.todayOptimizeCount()
+        let secs = Int(controller.settingsStore.settings.backgroundSeconds)
         let header = NSMenuItem(
-            title: monitoring ? "监控中 · 今日优化 \(count) 次" : "已暂停监控",
+            title: monitoring ? "监控中 · 后台 \(secs)s · 今日 \(count) 次" : "已暂停监控",
             action: nil,
             keyEquivalent: ""
         )

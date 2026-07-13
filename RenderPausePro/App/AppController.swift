@@ -147,23 +147,6 @@ final class AppController {
         }
     }
 
-    func exempt(bundleID: String, duration: TimeInterval) {
-        if sessionStore.state(for: bundleID) == .optimized,
-           let rule = ruleStore.rule(for: bundleID),
-           let app = workspace.runningApp(bundleID: bundleID) {
-            RestoreCoordinator.restore(app: app, action: rule.action)
-            actionLog.append(LogEntry(
-                bundleID: bundleID,
-                displayName: rule.displayName,
-                event: "restored",
-                action: rule.action.rawValue,
-                reason: "exemption"
-            ))
-        }
-        engine.exempt(bundleID: bundleID, until: Date().addingTimeInterval(duration))
-        sessionStore.set(bundleID, .paused)
-        tick()
-    }
 
     func showPreferences() {
         if preferences == nil {

@@ -8,6 +8,10 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
     private let axStatusLabel = NSTextField(labelWithString: "")
     private let axButton = NSButton(title: "打开辅助功能设置", target: nil, action: nil)
 
+    private let backgroundLabel = NSTextField(labelWithString: "后台满")
+    private let backgroundField = NSTextField(string: "30")
+    private let backgroundUnitLabel = NSTextField(labelWithString: "秒后优化（全局，5–600）")
+
     private let rulesTable = NSTableView()
     private let logTable = NSTableView()
     private var rulesScroll: NSScrollView!
@@ -37,6 +41,9 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
         guard let controller else { return }
         monitoringCheckbox.state = controller.settingsStore.settings.monitoringEnabled ? .on : .off
         launchCheckbox.state = controller.settingsStore.settings.launchAtLogin ? .on : .off
+        if backgroundField.currentEditor() == nil {
+            backgroundField.stringValue = "\(Int(controller.settingsStore.settings.backgroundSeconds))"
+        }
         let trusted = PermissionGate.isAccessibilityTrusted()
         axStatusLabel.stringValue = trusted ? "辅助功能：已授权" : "辅助功能：未授权（最小化策略需要）"
         rulesTable.reloadData()
@@ -51,21 +58,33 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
         axButton.target = self
         axButton.action = #selector(openAX)
 
+        backgroundField.alignment = .right
+        backgroundField.font = NSFont.monospacedDigitSystemFont(ofSize: 13, weight: .regular)
+        backgroundField.target = self
+        backgroundField.action = #selector(commitBackgroundSeconds)
+        backgroundField.delegate = self
+        backgroundField.translatesAutoresizingMaskIntoConstraints = false
+        backgroundField.widthAnchor.constraint(equalToConstant: 56).isActive = true
+
         let topStack = NSStackView(views: [monitoringCheckbox, launchCheckbox, axStatusLabel, axButton])
         topStack.orientation = .horizontal
         topStack.spacing = 16
         topStack.alignment = .centerY
         topStack.translatesAutoresizingMaskIntoConstraints = false
 
+        let thresholdStack = NSStackView(views: [backgroundLabel, backgroundField, backgroundUnitLabel])
+        thresholdStack.orientation = .horizontal
+        thresholdStack.spacing = 8
+        thresholdStack.alignment = .centerY
+        thresholdStack.translatesAutoresizingMaskIntoConstraints = false
+
         rulesScroll = makeTableScroll(
             table: rulesTable,
             columns: [
                 ("enabled", "启用", 50),
-                ("name", "名称", 140),
-                ("bundle", "Bundle ID", 180),
-                ("action", "策略", 80),
-                ("idle", "后台秒", 70),
-                ("locked", "锁定", 50)
+                ("name", "名称", 160),
+                ("bundle", "Bundle ID", 220),
+                ("action", "策略", 90)
             ]
         )
         rulesTable.dataSource = self
@@ -76,13 +95,8 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
 
         let addButton = NSButton(title: "添加运行中应用…", target: self, action: #selector(addRunning))
         let removeButton = NSButton(title: "移除", target: self, action: #selector(removeSelected))
-        let exempt10 = NSButton(title: "豁免 10 分钟", target: self, action: #selector(exempt10))
-        let exempt60 = NSButton(title: "豁免 1 小时", target: self, action: #selector(exempt60))
-        let exemptLong = NSButton(title: "豁免直到重启", target: self, action: #selector(exemptLong))
         let toggleAction = NSButton(title: "切换策略", target: self, action: #selector(cycleAction))
-        let toggleLock = NSButton(title: "切换锁定", target: self, action: #selector(toggleLock))
-
-        let buttonStack = NSStackView(views: [addButton, removeButton, toggleAction, toggleLock, exempt10, exempt60, exemptLong])
+        let buttonStack = NSStackView(views: [addButton, removeButton, toggleAction])
         buttonStack.orientation = .horizontal
         buttonStack.spacing = 8
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
@@ -106,7 +120,7 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
         let logLabel = NSTextField(labelWithString: "最近操作日志")
         logLabel.font = NSFont.boldSystemFont(ofSize: 13)
 
-        let root = NSStackView(views: [topStack, rulesLabel, rulesScroll, buttonStack, logLabel, logScroll])
+        let root = NSStackView(views: [topStack, thresholdStack, rulesLabel, rulesScroll, buttonStack, logLabel, logScroll])
         root.orientation = .vertical
         root.alignment = .leading
         root.spacing = 10
@@ -172,6 +186,13 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
         reload()
     }
 
+    @objc private func commitBackgroundSeconds() {
+        let raw = backgroundField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        let value = TimeInterval(raw) ?? AppSettings.defaultBackgroundSeconds
+        controller?.settingsStore.update { $0.backgroundSeconds = value }
+        reload()
+    }
+
     @objc private func addRunning() {
         guard let controller else { return }
         let picker = RunningAppPickerViewController(controller: controller) { [weak self] in
@@ -206,28 +227,6 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
         reload()
     }
 
-    @objc private func toggleLock() {
-        guard let controller else { return }
-        let row = rulesTable.selectedRow
-        guard row >= 0, row < controller.ruleStore.rules.count else { return }
-        var rule = controller.ruleStore.rules[row]
-        rule.locked.toggle()
-        _ = controller.ruleStore.upsert(rule)
-        reload()
-    }
-
-    @objc private func exempt10() { exempt(duration: 600) }
-    @objc private func exempt60() { exempt(duration: 3600) }
-    @objc private func exemptLong() { exempt(duration: 60 * 60 * 24 * 30) }
-
-    private func exempt(duration: TimeInterval) {
-        guard let controller else { return }
-        let row = rulesTable.selectedRow
-        guard row >= 0, row < controller.ruleStore.rules.count else { return }
-        controller.exempt(bundleID: controller.ruleStore.rules[row].bundleID, duration: duration)
-        reload()
-    }
-
     // MARK: - Table
 
     func numberOfRows(in tableView: NSTableView) -> Int {
@@ -250,8 +249,6 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
             case "name": field.stringValue = rule.displayName
             case "bundle": field.stringValue = rule.bundleID
             case "action": field.stringValue = rule.action.titleZH
-            case "idle": field.stringValue = "\(Int(rule.idleSeconds))"
-            case "locked": field.stringValue = rule.locked ? "✓" : "—"
             default: break
             }
             return field
@@ -274,17 +271,6 @@ final class PreferencesViewController: NSViewController, NSTableViewDataSource, 
         return nil
     }
 
-    func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
-        true
-    }
-
-    override func mouseDown(with event: NSEvent) {
-        super.mouseDown(with: event)
-    }
-}
-
-// Toggle enable on single click of enabled column via selection + space alternative: double-click name cycles enable
-extension PreferencesViewController {
     override func keyDown(with event: NSEvent) {
         if event.charactersIgnoringModifiers == " " {
             guard let controller else { return }
@@ -295,26 +281,14 @@ extension PreferencesViewController {
             reload()
             return
         }
-        if event.charactersIgnoringModifiers == "+" || event.charactersIgnoringModifiers == "=" {
-            guard let controller else { return }
-            let row = rulesTable.selectedRow
-            guard row >= 0, row < controller.ruleStore.rules.count else { return }
-            var rule = controller.ruleStore.rules[row]
-            rule.idleSeconds = min(600, rule.idleSeconds + 5)
-            _ = controller.ruleStore.upsert(rule)
-            reload()
-            return
-        }
-        if event.charactersIgnoringModifiers == "-" {
-            guard let controller else { return }
-            let row = rulesTable.selectedRow
-            guard row >= 0, row < controller.ruleStore.rules.count else { return }
-            var rule = controller.ruleStore.rules[row]
-            rule.idleSeconds = max(5, rule.idleSeconds - 5)
-            _ = controller.ruleStore.upsert(rule)
-            reload()
-            return
-        }
         super.keyDown(with: event)
+    }
+}
+
+extension PreferencesViewController: NSTextFieldDelegate {
+    func controlTextDidEndEditing(_ obj: Notification) {
+        if obj.object as? NSTextField === backgroundField {
+            commitBackgroundSeconds()
+        }
     }
 }

@@ -12,6 +12,7 @@ final class SettingsStore {
         if let data = defaults.data(forKey: key),
            let decoded = try? JSONDecoder().decode(AppSettings.self, from: data) {
             settings = decoded
+            settings.normalize()
         } else {
             settings = .default
         }
@@ -19,6 +20,7 @@ final class SettingsStore {
 
     func update(_ mutate: (inout AppSettings) -> Void) {
         mutate(&settings)
+        settings.normalize()
         persist()
         onChange?()
     }

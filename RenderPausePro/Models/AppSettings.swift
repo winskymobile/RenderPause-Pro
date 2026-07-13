@@ -4,10 +4,58 @@ struct AppSettings: Codable, Equatable, Sendable {
     var monitoringEnabled: Bool
     var launchAtLogin: Bool
     var hasCompletedOnboarding: Bool
+    /// Global seconds an app must stay in background before optimize. Default 30.
+    var backgroundSeconds: TimeInterval
+
+    static let backgroundRange: ClosedRange<TimeInterval> = 5...600
+    static let defaultBackgroundSeconds: TimeInterval = 30
 
     static let `default` = AppSettings(
         monitoringEnabled: true,
         launchAtLogin: true,
-        hasCompletedOnboarding: false
+        hasCompletedOnboarding: false,
+        backgroundSeconds: defaultBackgroundSeconds
     )
+
+    mutating func normalize() {
+        backgroundSeconds = min(
+            max(backgroundSeconds, Self.backgroundRange.lowerBound),
+            Self.backgroundRange.upperBound
+        )
+    }
+
+    init(
+        monitoringEnabled: Bool,
+        launchAtLogin: Bool,
+        hasCompletedOnboarding: Bool,
+        backgroundSeconds: TimeInterval
+    ) {
+        self.monitoringEnabled = monitoringEnabled
+        self.launchAtLogin = launchAtLogin
+        self.hasCompletedOnboarding = hasCompletedOnboarding
+        self.backgroundSeconds = backgroundSeconds
+        normalize()
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        monitoringEnabled = try c.decodeIfPresent(Bool.self, forKey: .monitoringEnabled) ?? true
+        launchAtLogin = try c.decodeIfPresent(Bool.self, forKey: .launchAtLogin) ?? true
+        hasCompletedOnboarding = try c.decodeIfPresent(Bool.self, forKey: .hasCompletedOnboarding) ?? false
+        backgroundSeconds = try c.decodeIfPresent(TimeInterval.self, forKey: .backgroundSeconds)
+            ?? Self.defaultBackgroundSeconds
+        normalize()
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case monitoringEnabled, launchAtLogin, hasCompletedOnboarding, backgroundSeconds
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(monitoringEnabled, forKey: .monitoringEnabled)
+        try c.encode(launchAtLogin, forKey: .launchAtLogin)
+        try c.encode(hasCompletedOnboarding, forKey: .hasCompletedOnboarding)
+        try c.encode(backgroundSeconds, forKey: .backgroundSeconds)
+    }
 }

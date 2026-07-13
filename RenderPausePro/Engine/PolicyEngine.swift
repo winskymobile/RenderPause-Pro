@@ -4,29 +4,11 @@ final class PolicyEngine {
     private let ruleStore: RuleStore
     private let sessionStore: SessionStore
     private let settingsStore: SettingsStore
-    private var exemptions: [String: Date] = [:]
 
     init(ruleStore: RuleStore, sessionStore: SessionStore, settingsStore: SettingsStore) {
         self.ruleStore = ruleStore
         self.sessionStore = sessionStore
         self.settingsStore = settingsStore
-    }
-
-    func exempt(bundleID: String, until: Date) {
-        exemptions[bundleID] = until
-    }
-
-    func clearExemption(bundleID: String) {
-        exemptions.removeValue(forKey: bundleID)
-    }
-
-    func isExempt(_ bundleID: String, now: Date = Date()) -> Bool {
-        guard let until = exemptions[bundleID] else { return false }
-        if until <= now {
-            exemptions.removeValue(forKey: bundleID)
-            return false
-        }
-        return true
     }
 
     func evaluate(
@@ -37,7 +19,6 @@ final class PolicyEngine {
         var commands: [PolicyCommand] = []
         var runningByID: [String: RunningAppSnapshot] = [:]
         for snap in running {
-            // Prefer an active instance if duplicates exist.
             if let existing = runningByID[snap.bundleID] {
                 if snap.isActive && !existing.isActive {
                     runningByID[snap.bundleID] = snap
@@ -46,6 +27,8 @@ final class PolicyEngine {
                 runningByID[snap.bundleID] = snap
             }
         }
+
+        let threshold = settingsStore.settings.backgroundSeconds
 
         for rule in ruleStore.rules {
             if let app = runningByID[rule.bundleID], app.isFinished {
@@ -57,9 +40,9 @@ final class PolicyEngine {
                 continue
             }
 
-            if !rule.enabled || rule.locked || isExempt(rule.bundleID, now: now) {
+            if !rule.enabled {
                 if sessionStore.state(for: rule.bundleID) == .optimized {
-                    commands.append(.restore(bundleID: rule.bundleID, action: rule.action, reason: "paused"))
+                    commands.append(.restore(bundleID: rule.bundleID, action: rule.action, reason: "disabled"))
                 }
                 commands.append(.setState(bundleID: rule.bundleID, state: .paused))
                 continue
@@ -89,8 +72,7 @@ final class PolicyEngine {
                 continue
             }
 
-            // Key fix: use per-app background duration, not global system input idle.
-            if app.secondsSinceDeactivated >= rule.idleSeconds {
+            if app.secondsSinceDeactivated >= threshold {
                 commands.append(.optimize(
                     bundleID: rule.bundleID,
                     action: rule.action,

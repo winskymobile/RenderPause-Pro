@@ -25,12 +25,10 @@ final class RuleStore {
         if rule.bundleID == BundleIdentity.bundleID {
             return false
         }
-        var normalized = rule
-        normalized.normalize()
-        if let idx = rules.firstIndex(where: { $0.bundleID == normalized.bundleID }) {
-            rules[idx] = normalized
+        if let idx = rules.firstIndex(where: { $0.bundleID == rule.bundleID }) {
+            rules[idx] = rule
         } else {
-            rules.append(normalized)
+            rules.append(rule)
         }
         rules.sort { $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending }
         persist()
@@ -57,7 +55,6 @@ final class RuleStore {
         }
         do {
             rules = try JSONDecoder().decode([AppRule].self, from: data)
-            for i in rules.indices { rules[i].normalize() }
         } catch {
             rules = []
         }
