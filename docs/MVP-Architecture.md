@@ -60,7 +60,7 @@
 | `HideActuator` | `NSRunningApplication.hide/unhide` | 1 |
 | `MinimizeActuator` | AX minimize / raise | 1 |
 | `ActionLog` | 本地环形日志 | 1 |
-| `WindowGeometrySensor` | CGWindowList 遮挡近似 | 2 |
+| `OcclusionDetector` / WindowGeometry | CGWindowList 完全遮挡近似（Scheme A：未完全遮挡不优化） | 1 (landed) |
 | `SuspendActuator` | SIGSTOP/CONT + PID 持久化 | 3 |
 
 ---

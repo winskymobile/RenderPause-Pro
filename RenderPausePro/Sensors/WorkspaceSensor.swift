@@ -5,7 +5,7 @@ final class WorkspaceSensor {
     var onChange: (() -> Void)?
 
     private var observers: [NSObjectProtocol] = []
-    /// bundleID -> time when app last left *usable* foreground (not split partner)
+    /// bundleID -> time when app last left *usable* foreground and became fully occluded
     private var deactivatedAt: [String: Date] = [:]
     /// Last frontmost app with regular activation policy (ignores IME / agents / menu bar).
     private var lastRegularFrontmost: String?
@@ -51,12 +51,11 @@ final class WorkspaceSensor {
                 candidateBundleID: previousRegular,
                 frontmostBundleID: currentRegular
             )
-            if !stillSplit, deactivatedAt[previousRegular] == nil {
-                deactivatedAt[previousRegular] = Date()
-            }
             if stillSplit {
                 deactivatedAt.removeValue(forKey: previousRegular)
             }
+            // Timer start for non-split apps is deferred to snapshots() once we know
+            // the app is fully occluded (Scheme A).
         }
         if let currentRegular {
             deactivatedAt.removeValue(forKey: currentRegular)
@@ -123,16 +122,25 @@ final class WorkspaceSensor {
             // Treat Split View partners as still "in use" / foreground-equivalent.
             let isFront = isSystemFront || isSplitPartner
 
+            // Scheme A: residual visible area means "still in use" for optimize gating.
+            let partiallyVisible = OcclusionDetector.isPartiallyVisible(bundleID: id, windows: windows)
+            let fullyOccluded = !partiallyVisible
+
             if isFront {
                 deactivatedAt.removeValue(forKey: id)
-            } else if deactivatedAt[id] == nil {
-                if let effectiveFront, effectiveFront != id {
+            } else if partiallyVisible {
+                // Peeking behind another window: do not accumulate background timer.
+                deactivatedAt.removeValue(forKey: id)
+            } else if fullyOccluded {
+                // Only start/continue timer when not effective-foreground AND fully occluded
+                // (or no significant on-screen windows).
+                if deactivatedAt[id] == nil {
                     deactivatedAt[id] = now
                 }
             }
 
             let since: TimeInterval
-            if isFront {
+            if isFront || partiallyVisible {
                 since = 0
             } else if let t = deactivatedAt[id] {
                 since = max(0, now.timeIntervalSince(t))
@@ -145,7 +153,8 @@ final class WorkspaceSensor {
                 isActive: isFront,
                 isHidden: app.isHidden,
                 isFinished: app.isTerminated,
-                secondsSinceDeactivated: since
+                secondsSinceDeactivated: since,
+                isPartiallyVisible: partiallyVisible
             )
         }
     }
@@ -157,14 +166,21 @@ final class WorkspaceSensor {
         return matches.first(where: { $0.activationPolicy == .regular }) ?? matches.first
     }
 
-    /// True when the bundle currently looks like a Split View partner of the regular frontmost app.
+    /// True when the bundle must not be optimized right now.
     func isProtectedFromOptimize(bundleID: String) -> Bool {
         if regularFrontmostBundleID() == bundleID { return true }
         if let app = runningApp(bundleID: bundleID), app.isActive { return true }
-        return SplitViewDetector.isSplitPartner(
+        if SplitViewDetector.isSplitPartner(
             candidateBundleID: bundleID,
             frontmostBundleID: regularFrontmostBundleID()
-        )
+        ) {
+            return true
+        }
+        let windows = SplitViewDetector.listOnScreenWindows()
+        if OcclusionDetector.isPartiallyVisible(bundleID: bundleID, windows: windows) {
+            return true
+        }
+        return false
     }
 
     deinit { stop() }

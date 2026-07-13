@@ -31,14 +31,16 @@ final class PolicyEngineTests: XCTestCase {
         active: Bool = false,
         hidden: Bool = false,
         finished: Bool = false,
-        since: TimeInterval = 0
+        since: TimeInterval = 0,
+        partiallyVisible: Bool = false
     ) -> RunningAppSnapshot {
         RunningAppSnapshot(
             bundleID: id,
             isActive: active,
             isHidden: hidden,
             isFinished: finished,
-            secondsSinceDeactivated: since
+            secondsSinceDeactivated: since,
+            isPartiallyVisible: partiallyVisible
         )
     }
 
