@@ -104,7 +104,11 @@ final class WorkspaceSensor {
     }
 
     func runningApp(bundleID: String) -> NSRunningApplication? {
-        NSWorkspace.shared.runningApplications.first { $0.bundleIdentifier == bundleID && !$0.isTerminated }
+        let matches = NSWorkspace.shared.runningApplications.filter {
+            $0.bundleIdentifier == bundleID && !$0.isTerminated
+        }
+        // Prefer regular GUI process over helpers that may share identifiers.
+        return matches.first(where: { $0.activationPolicy == .regular }) ?? matches.first
     }
 
     deinit { stop() }

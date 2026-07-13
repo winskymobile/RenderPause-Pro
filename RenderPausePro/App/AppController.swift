@@ -76,7 +76,19 @@ final class AppController {
         for command in commands {
             switch command {
             case .setState(let id, let state):
+                let previous = sessionStore.state(for: id)
                 sessionStore.set(id, state)
+                // Engine can mark hide-rules as optimized when already hidden (no optimize cmd).
+                if previous != .optimized, state == .optimized,
+                   let rule = ruleStore.rule(for: id), rule.action == .hide {
+                    actionLog.append(LogEntry(
+                        bundleID: id,
+                        displayName: rule.displayName,
+                        event: "optimized",
+                        action: rule.action.rawValue,
+                        reason: "already_hidden"
+                    ))
+                }
             case .optimize(let id, let action, let reason):
                 guard let app = workspace.runningApp(bundleID: id) else { continue }
                 if let err = RestoreCoordinator.optimize(app: app, action: action) {
