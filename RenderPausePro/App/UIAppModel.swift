@@ -13,6 +13,8 @@ final class UIAppModel: ObservableObject {
     @Published private(set) var logEntries: [LogEntry] = []
     @Published private(set) var accessibilityTrusted: Bool = false
     @Published private(set) var todayOptimizeCount: Int = 0
+    /// Per-rule session state for prefs list (mirrors menu bar).
+    @Published private(set) var ruleStatuses: [String: WatchState] = [:]
     @Published var selectedRuleIDs: Set<String> = []
 
     private var refreshTimer: Timer?
@@ -52,11 +54,30 @@ final class UIAppModel: ObservableObject {
         logEntries = Array(controller.actionLog.entries.prefix(80))
         todayOptimizeCount = controller.actionLog.todayOptimizeCount()
         accessibilityTrusted = PermissionGate.isAccessibilityTrusted()
+        refreshRuleStatuses()
     }
 
     func refreshLight() {
         accessibilityTrusted = PermissionGate.isAccessibilityTrusted()
         todayOptimizeCount = controller.actionLog.todayOptimizeCount()
+        refreshRuleStatuses()
+    }
+
+    private func refreshRuleStatuses() {
+        var map: [String: WatchState] = [:]
+        for rule in controller.ruleStore.rules {
+            map[rule.bundleID] = controller.sessionStore.state(for: rule.bundleID)
+        }
+        ruleStatuses = map
+    }
+
+    /// Same copy as menu bar app rows: 已隐藏 / 监控中 / 已关闭.
+    func statusText(for rule: AppRule) -> String {
+        if !rule.enabled { return "已关闭" }
+        switch ruleStatuses[rule.bundleID] ?? .watched {
+        case .optimized: return "已隐藏"
+        case .watched, .paused: return "监控中"
+        }
     }
 
     // MARK: - Actions

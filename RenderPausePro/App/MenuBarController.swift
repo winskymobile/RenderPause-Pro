@@ -1,9 +1,11 @@
 import AppKit
 
+/// Status-item menu — pixel-aligned to `docs/ui-mockups/menubar-menu-v1.html` (v1.4).
 @MainActor
-final class MenuBarController: NSObject {
+final class MenuBarController: NSObject, NSMenuDelegate {
     private let statusItem: NSStatusItem
     private weak var controller: AppController?
+    private var menu = NSMenu()
 
     init(controller: AppController) {
         self.controller = controller
@@ -13,123 +15,174 @@ final class MenuBarController: NSObject {
             button.image = Self.statusItemImage()
             button.toolTip = "RenderPause Pro"
         }
+        menu.delegate = self
+        menu.autoenablesItems = false
+        // Minimum width matches HTML --menu-w
+        menu.minimumWidth = MenuBarChrome.menuWidth
+        statusItem.menu = menu
         reload()
     }
 
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        rebuild(into: menu)
+    }
+
     func reload() {
+        rebuild(into: menu)
+    }
+
+    private func rebuild(into menu: NSMenu) {
         guard let controller else { return }
-        let menu = NSMenu()
-        menu.autoenablesItems = true
+        menu.removeAllItems()
 
         let monitoring = controller.settingsStore.settings.monitoringEnabled
         let count = controller.actionLog.todayOptimizeCount()
         let secs = Int(controller.settingsStore.settings.backgroundSeconds)
 
-        let header = NSMenuItem(
-            title: monitoring ? "监控中 · 后台 \(secs) 秒 · 今日 \(count) 次" : "已暂停监控",
-            action: nil,
-            keyEquivalent: ""
+        // ── A. Header: desktop icon + status ──
+        let header = MenuBarHeaderView()
+        header.configure(
+            title: monitoring ? "监控中" : "已暂停监控",
+            subtitle: monitoring
+                ? "后台 \(secs) 秒 · 今日 \(count) 次"
+                : "今日 \(count) 次 · 恢复后继续优化",
+            icon: MenuBarMenuItemFactory.symbol("desktopcomputer", pointSize: 14)
         )
-        header.isEnabled = false
-        menu.addItem(header)
+        menu.addItem(MenuBarMenuItemFactory.wrap(header))
         menu.addItem(.separator())
 
-        let toggle = NSMenuItem(
+        // ── B. Pause / resume only ──
+        let toggleRow = MenuBarActionRowView()
+        toggleRow.configure(
             title: monitoring ? "暂停监控" : "恢复监控",
-            action: #selector(toggleMonitoring),
+            icon: MenuBarMenuItemFactory.symbol(monitoring ? "pause.fill" : "play.fill", pointSize: 13),
             keyEquivalent: ""
         )
-        toggle.target = self
-        menu.addItem(toggle)
-
-        let restore = NSMenuItem(
-            title: "立即恢复全部",
-            action: #selector(restoreAll),
-            keyEquivalent: "r"
-        )
-        restore.target = self
-        menu.addItem(restore)
-
+        toggleRow.onActivate = { [weak self] in
+            self?.toggleMonitoring()
+        }
+        menu.addItem(MenuBarMenuItemFactory.wrap(toggleRow, height: MenuBarChrome.rowHeight))
         menu.addItem(.separator())
+
+        // ── C. Section + apps ──
+        let section = MenuBarSectionLabelView()
+        section.configure(title: "应用名单")
+        menu.addItem(MenuBarMenuItemFactory.wrap(section))
 
         if controller.ruleStore.rules.isEmpty {
-            let empty = NSMenuItem(
-                title: "名单为空",
-                action: nil,
-                keyEquivalent: ""
-            )
-            empty.isEnabled = false
-            menu.addItem(empty)
+            let empty = MenuBarPlainDisabledView()
+            empty.configure(title: "名单为空 — 打开窗口后添加应用")
+            menu.addItem(MenuBarMenuItemFactory.wrap(empty))
         } else {
+            let checkOn = MenuBarMenuItemFactory.bareCheckImage()
+            let checkOff = MenuBarMenuItemFactory.emptyCheckImage()
             for rule in controller.ruleStore.rules.prefix(8) {
-                let state = controller.sessionStore.state(for: rule.bundleID)
-                let mark: String
-                switch state {
-                case .optimized: mark = "●"
-                case .paused: mark = "○"
-                case .watched: mark = "·"
-                }
-                let suffix = rule.enabled ? "" : "（关）"
-                let item = NSMenuItem(
-                    title: "\(mark)  \(rule.displayName)\(suffix)",
-                    action: #selector(toggleRule(_:)),
-                    keyEquivalent: ""
+                let session = controller.sessionStore.state(for: rule.bundleID)
+                let row = MenuBarAppRowView()
+                let bundleID = rule.bundleID
+                row.configure(
+                    title: rule.displayName,
+                    appIcon: MenuBarMenuItemFactory.appIcon(bundleID: bundleID),
+                    enabled: rule.enabled,
+                    status: MenuBarMenuItemFactory.statusText(enabled: rule.enabled, session: session),
+                    checkOn: checkOn,
+                    checkOff: checkOff
                 )
-                item.representedObject = rule.bundleID
-                item.state = rule.enabled ? .on : .off
-                item.target = self
-                menu.addItem(item)
+                row.onActivate = { [weak self] in
+                    self?.toggleRule(bundleID: bundleID)
+                }
+                menu.addItem(MenuBarMenuItemFactory.wrap(row, height: MenuBarChrome.rowHeight))
             }
         }
 
-        let manage = NSMenuItem(
-            title: "管理应用…",
-            action: #selector(openPrefs),
-            keyEquivalent: ""
-        )
-        manage.target = self
-        menu.addItem(manage)
-
         menu.addItem(.separator())
 
-        let prefs = NSMenuItem(
-            title: "偏好设置…",
-            action: #selector(openPrefs),
-            keyEquivalent: ","
+        // ── D. Footer ──
+        let openRow = MenuBarActionRowView()
+        openRow.configure(
+            title: "打开 RenderPause Pro",
+            icon: MenuBarMenuItemFactory.symbol("macwindow", pointSize: 13),
+            keyEquivalent: "⌘,"
         )
-        prefs.target = self
-        menu.addItem(prefs)
+        openRow.onActivate = { [weak self] in
+            self?.openPrefs()
+        }
+        menu.addItem(MenuBarMenuItemFactory.wrap(openRow, height: MenuBarChrome.rowHeight))
 
-        // Minimize-only Accessibility prompt — hidden when product is hide-only.
         if FeatureFlags.allowMinimizeMode {
             let ax = PermissionGate.isAccessibilityTrusted()
             let needsAX = controller.settingsStore.settings.optimizeAction == .minimize
             if needsAX && !ax {
-                let axItem = NSMenuItem(
+                let axRow = MenuBarActionRowView()
+                axRow.configure(
                     title: "授权辅助功能…",
-                    action: #selector(openAX),
+                    icon: MenuBarMenuItemFactory.symbol("hand.raised", pointSize: 13),
                     keyEquivalent: ""
                 )
-                axItem.target = self
-                menu.addItem(axItem)
-                menu.addItem(.separator())
+                axRow.onActivate = { [weak self] in
+                    self?.openAX()
+                }
+                menu.addItem(MenuBarMenuItemFactory.wrap(axRow, height: MenuBarChrome.rowHeight))
             }
         }
 
-        menu.addItem(NSMenuItem(
-            title: "退出 RenderPause Pro",
-            action: #selector(NSApplication.terminate(_:)),
-            keyEquivalent: "q"
-        ))
+        let quitRow = MenuBarActionRowView()
+        quitRow.configure(
+            title: "退出",
+            icon: MenuBarMenuItemFactory.symbol("power", pointSize: 13),
+            keyEquivalent: "⌘Q"
+        )
+        quitRow.onActivate = {
+            NSApp.terminate(nil)
+        }
+        menu.addItem(MenuBarMenuItemFactory.wrap(quitRow, height: MenuBarChrome.rowHeight))
 
-        statusItem.menu = menu
+        // Hidden standard items so ⌘, / ⌘Q still work (custom views don't receive keyEquiv).
+        let openKey = NSMenuItem(title: "", action: #selector(openPrefsFromKey), keyEquivalent: ",")
+        openKey.target = self
+        openKey.isHidden = true
+        menu.addItem(openKey)
+
+        let quitKey = NSMenuItem(title: "", action: #selector(quitFromKey), keyEquivalent: "q")
+        quitKey.target = self
+        quitKey.isHidden = true
+        menu.addItem(quitKey)
     }
 
-    /// Menu bar template icon from `MenuBarIcon` (SVG → PNG). Template for light/dark tint.
+    @objc private func openPrefsFromKey() {
+        openPrefs()
+    }
+
+    @objc private func quitFromKey() {
+        NSApp.terminate(nil)
+    }
+
+    // MARK: - Actions
+
+    private func toggleMonitoring() {
+        controller?.settingsStore.update { $0.monitoringEnabled.toggle() }
+        // menu rebuilds on next open; force refresh if still open
+        reload()
+    }
+
+    private func toggleRule(bundleID: String) {
+        guard let rule = controller?.ruleStore.rule(for: bundleID) else { return }
+        controller?.ruleStore.setEnabled(bundleID: bundleID, enabled: !rule.enabled)
+        reload()
+    }
+
+    private func openPrefs() {
+        controller?.showPreferences()
+    }
+
+    private func openAX() {
+        _ = PermissionGate.isAccessibilityTrusted(prompt: true)
+        PermissionGate.openAccessibilitySettings()
+    }
+
+    /// Menu bar template icon from `MenuBarIcon`.
     private static func statusItemImage() -> NSImage {
         let pointSize = NSSize(width: 18, height: 18)
-
-        // Xcode COMBINE_HIDPI may produce MenuBarIcon.tiff from 1x + @2x.
         let candidates: [NSImage?] = [
             Bundle.main.image(forResource: "MenuBarIcon"),
             NSImage(named: "MenuBarIcon"),
@@ -140,47 +193,18 @@ final class MenuBarController: NSObject {
                 return NSImage(contentsOf: url)
             }()
         ]
-
         if let source = candidates.compactMap({ $0 }).first {
-            // Copy so we can set template + size without mutating cached shared image.
             let image = NSImage(size: pointSize)
             image.addRepresentations(source.representations)
             image.size = pointSize
             image.isTemplate = true
             return image
         }
-
         let symbol = NSImage(
             systemSymbolName: "pause.rectangle",
             accessibilityDescription: "RenderPause Pro"
         ) ?? NSImage()
         symbol.isTemplate = true
         return symbol
-    }
-
-    @objc private func toggleMonitoring() {
-        controller?.settingsStore.update { $0.monitoringEnabled.toggle() }
-        reload()
-    }
-
-    @objc private func restoreAll() {
-        controller?.restoreAll(reason: "manual")
-        reload()
-    }
-
-    @objc private func toggleRule(_ sender: NSMenuItem) {
-        guard let id = sender.representedObject as? String,
-              let rule = controller?.ruleStore.rule(for: id) else { return }
-        controller?.ruleStore.setEnabled(bundleID: id, enabled: !rule.enabled)
-        reload()
-    }
-
-    @objc private func openPrefs() {
-        controller?.showPreferences()
-    }
-
-    @objc private func openAX() {
-        _ = PermissionGate.isAccessibilityTrusted(prompt: true)
-        PermissionGate.openAccessibilitySettings()
     }
 }

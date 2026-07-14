@@ -9,3 +9,14 @@ xcuserdata/
 *.ipa
 *.dSYM.zip
 *.dSYM
+
+# Local-only (kept on disk, not published to GitHub)
+.codex/
+openspec/
+DESIGN.md
+PRD.md
+PRODUCT.md
+docs/MVP-Architecture.md
+docs/UI-REDESIGN-BRIEF.md
+docs/manual-test-checklist.md
+docs/ui-mockups/

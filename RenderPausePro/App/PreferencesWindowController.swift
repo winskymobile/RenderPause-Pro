@@ -18,8 +18,10 @@ final class PreferencesWindowController: NSWindowController, NSWindowDelegate {
         self.model = UIAppModel(controller: controller)
         let hosting = NSHostingController(rootView: PreferencesView(model: model))
 
+        // Default size = minimum resizable size (still free to grow).
+        let minSize = NSSize(width: 740, height: 500)
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 820, height: 560),
+            contentRect: NSRect(x: 0, y: 0, width: minSize.width, height: minSize.height),
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered,
             defer: false
@@ -30,8 +32,8 @@ final class PreferencesWindowController: NSWindowController, NSWindowDelegate {
         window.titlebarSeparatorStyle = .none
         window.isMovableByWindowBackground = true
         window.contentViewController = hosting
-        window.setContentSize(NSSize(width: 820, height: 560))
-        window.minSize = NSSize(width: 740, height: 500)
+        window.minSize = minSize
+        window.setContentSize(minSize)
         window.center()
         window.isReleasedWhenClosed = false
         window.backgroundColor = NSColor(name: nil) { appearance in

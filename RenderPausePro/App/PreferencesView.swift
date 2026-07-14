@@ -54,8 +54,9 @@ private enum PrefsChrome {
     static let radius: CGFloat = 10
     static let activityRadius: CGFloat = 8
     static let activityRowHeight: CGFloat = 26
-    static let winW: CGFloat = 820
-    static let winH: CGFloat = 560
+    /// Default open size (= min resizable). User can still enlarge the window.
+    static let winW: CGFloat = 740
+    static let winH: CGFloat = 500
 
     private static func rgb(_ hex: UInt32) -> Color {
         Color(
@@ -81,29 +82,32 @@ struct PreferencesView: View {
             titleBar
             contentBody
         }
-        .frame(minWidth: 740, idealWidth: PrefsChrome.winW, minHeight: 500, idealHeight: PrefsChrome.winH)
+        .frame(minWidth: PrefsChrome.winW, idealWidth: PrefsChrome.winW, minHeight: PrefsChrome.winH, idealHeight: PrefsChrome.winH)
         .background(PrefsChrome.windowBg(scheme))
         .ignoresSafeArea(.container, edges: .top)
         .onAppear { model.refresh() }
     }
 
-    // HTML .tb — 48px full-width chrome: bg-window, grid 72|1fr|72, title 13/600, bottom hairline
+    // HTML .tb — 48px full-width chrome; title + version after software name
     private var titleBar: some View {
         ZStack {
-            // Solid full-bleed bar (same token as window so lights sit on continuous chrome)
             PrefsChrome.windowBg(scheme)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             HStack(spacing: 0) {
-                // Left reserve for system traffic lights (HTML .dots column ~72 with pad)
-                Color.clear.frame(width: 72)
-                Text("RenderPause Pro")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(PrefsChrome.label(scheme))
-                    .tracking(-0.13) // -0.01em @ 13
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity)
-                    .multilineTextAlignment(.center)
+                Color.clear.frame(width: 72) // traffic-light column
+                HStack(spacing: 6) {
+                    Text("RenderPause Pro")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(PrefsChrome.label(scheme))
+                        .tracking(-0.13) // -0.01em @ 13
+                        .lineLimit(1)
+                    Text(appVersionLabel)
+                        .font(.system(size: 12, weight: .regular).monospacedDigit())
+                        .foregroundStyle(PrefsChrome.sec(scheme))
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity)
                 Color.clear.frame(width: 72)
             }
             .padding(.horizontal, 14)
@@ -144,6 +148,13 @@ struct PreferencesView: View {
         .padding(.bottom, 16)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(PrefsChrome.leftBg(scheme))
+    }
+
+    /// Marketing version label, e.g. `v1.0.0`.
+    private var appVersionLabel: String {
+        let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        let version = (short?.isEmpty == false) ? short! : "1.0.0"
+        return version.hasPrefix("v") ? version : "v\(version)"
     }
 
     // HTML .col-title 11/650 + .card of rows
@@ -490,12 +501,24 @@ private struct RuleRowView: View {
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            Button("移除") {
+            // Same status labels as menu bar (已隐藏 / 监控中 / 已关闭)
+            Text(model.statusText(for: rule))
+                .font(.system(size: 12).monospacedDigit())
+                .foregroundStyle(PrefsChrome.sec(scheme))
+                .lineLimit(1)
+
+            Button {
                 model.removeRule(bundleID: rule.bundleID)
+            } label: {
+                Image(systemName: "trash")
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundStyle(hovering ? PrefsChrome.label(scheme) : PrefsChrome.sec(scheme))
+                    .frame(width: 20, height: 20)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .font(.system(size: 12))
-            .foregroundStyle(hovering ? PrefsChrome.label(scheme) : PrefsChrome.sec(scheme))
+            .help("移除")
+            .accessibilityLabel("移除")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)

@@ -23,6 +23,7 @@
 		424EF4A18A664262BDF03AEB /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C5B2F589A080F799E6CCD /* FeatureFlags.swift */; };
 		440F4D6696F4C9D68BDCF9C8 /* AppMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E7AA4F58D452AE8ED14A1D /* AppMain.swift */; };
 		5B8F93396F1DBBF1500F5E80 /* PolicyEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3710DC9C36CD2905B5D0C486 /* PolicyEngine.swift */; };
+		5D3406C20C53966E7134C677 /* MenuBarMenuViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 251896F8A1A3DF5EEBC48C36 /* MenuBarMenuViews.swift */; };
 		672884A7EF1A21504A58FE22 /* SessionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495F9B204DE93123710F436C /* SessionStoreTests.swift */; };
 		71C819E6DB4EDE99892C1902 /* MenuBarIcon.svg in Resources */ = {isa = PBXBuildFile; fileRef = 34210B5069844248A37EBA4E /* MenuBarIcon.svg */; };
 		75EBFCCD1C626F882AFADDE9 /* RunningAppPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38856577D672987A807258D8 /* RunningAppPickerViewController.swift */; };
@@ -64,6 +65,7 @@
 		178D58E4478F7108AD5C2D7F /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
 		205159B01973518F975A0E25 /* OcclusionDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OcclusionDetectorTests.swift; sourceTree = "<group>"; };
 		240A3217BEC48AD5A8A6275F /* RuleStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleStoreTests.swift; sourceTree = "<group>"; };
+		251896F8A1A3DF5EEBC48C36 /* MenuBarMenuViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarMenuViews.swift; sourceTree = "<group>"; };
 		296788FC88D522353FB8238A /* PreferencesWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindowController.swift; sourceTree = "<group>"; };
 		32789D5C65C1DFD2B715FB13 /* AppRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRule.swift; sourceTree = "<group>"; };
 		3377727397B78CD78E9C99EC /* PermissionGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionGate.swift; sourceTree = "<group>"; };
@@ -124,6 +126,7 @@
 				D9273E8CA87944A15259C2DA /* AppDelegate.swift */,
 				B7E7AA4F58D452AE8ED14A1D /* AppMain.swift */,
 				178D58E4478F7108AD5C2D7F /* MenuBarController.swift */,
+				251896F8A1A3DF5EEBC48C36 /* MenuBarMenuViews.swift */,
 				6950363D5812E63F3B77C0BE /* OnboardingView.swift */,
 				96A5DA3F9B04F106B7B964CE /* PreferencesView.swift */,
 				296788FC88D522353FB8238A /* PreferencesWindowController.swift */,
@@ -352,6 +355,7 @@
 				E2F454A7CD697680B13AF0DC /* LaunchAtLogin.swift in Sources */,
 				A016DB5CE06C5A413FCCCDA8 /* LogEntry.swift in Sources */,
 				C2971429796116368438E5B6 /* MenuBarController.swift in Sources */,
+				5D3406C20C53966E7134C677 /* MenuBarMenuViews.swift in Sources */,
 				8FEF15B71D2CFCC044810673 /* MinimizeActuator.swift in Sources */,
 				291E6A8FF23A7FC17243FA3D /* OcclusionDetector.swift in Sources */,
 				D90DDC9E54C3B10558B3BD5C /* OnboardingView.swift in Sources */,
