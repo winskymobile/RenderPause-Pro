@@ -334,4 +334,4 @@ xcodebuild -scheme RenderPausePro -destination 'platform=macOS' -configuration D
 - [README.md](../README.md) — 仓库入口与构建说明  
 
 仓库：https://github.com/winskymobile/RenderPause-Pro  
-私有项目 · Copyright © 2026  
+Copyright © 2026  

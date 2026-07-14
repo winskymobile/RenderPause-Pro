@@ -140,4 +140,4 @@ open /Applications/RenderPausePro.app
 
 ---
 
-私有项目 · Copyright © 2026 · [GitHub](https://github.com/winskymobile/RenderPause-Pro)
+Copyright © 2026 · [GitHub](https://github.com/winskymobile/RenderPause-Pro)
