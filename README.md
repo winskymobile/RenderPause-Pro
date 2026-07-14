@@ -33,11 +33,11 @@
 
 **偏好设置** — 通用设置、最近活动与应用名单
 
-![偏好设置](docs/images/preferences.png)
+<img src="docs/images/preferences.png" alt="偏好设置" width="720" />
 
-**菜单栏** — 状态、暂停/恢复、名单与退出（对齐当前 UI）
+**菜单栏** — 状态、暂停/恢复、名单与退出
 
-![菜单栏菜单](docs/images/menubar-menu.png)
+<img src="docs/images/menubar-menu.png" alt="菜单栏菜单" width="300" />
 
 ---
 

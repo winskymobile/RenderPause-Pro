@@ -55,13 +55,13 @@ RenderPause Pro **不是**加速前台、也不是「一键清理」。
 
 左右分栏：左侧通用设置与最近活动，右侧应用名单（含状态与移除）。
 
-![RenderPause Pro 偏好设置](images/preferences.png)
+<img src="images/preferences.png" alt="RenderPause Pro 偏好设置" width="720" />
 
 ### 菜单栏菜单
 
 状态、暂停/恢复监控、应用名单（✓ + 状态字）、打开窗口与退出。
 
-![RenderPause Pro 菜单栏菜单](images/menubar-menu.png)
+<img src="images/menubar-menu.png" alt="RenderPause Pro 菜单栏菜单" width="300" />
 
 ---
 
