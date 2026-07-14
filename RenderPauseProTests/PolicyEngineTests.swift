@@ -144,4 +144,17 @@ final class PolicyEngineTests: XCTestCase {
         }))
         XCTAssertTrue(cmds.contains(.setState(bundleID: "com.demo.app", state: .optimized)))
     }
+
+    func testUsesGlobalOptimizeAction() {
+        settings.update { $0.optimizeAction = .minimize }
+        _ = rules.upsert(.makeNew(bundleID: "com.demo.app", displayName: "Demo"))
+        let cmds = engine.evaluate(
+            frontmostBundleID: "com.apple.finder",
+            running: [snap(id: "com.demo.app", since: 30)]
+        )
+        XCTAssertTrue(cmds.contains(where: {
+            if case .optimize(_, .minimize, _) = $0 { return true }
+            return false
+        }))
+    }
 }

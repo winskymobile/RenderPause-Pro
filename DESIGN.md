@@ -42,19 +42,22 @@ No custom OKLCH brand ramp required for this surface; identity = system fidelity
 
 ## Layout
 
-### Preferences window (single page)
+### Preferences window (split layout)
 
-- Size: ~ **520×640** (resizable min ~480×560); not a wide 760 dashboard  
-- Structure: **vertical stack of grouped sections** with generous outer margin **20–24pt**, section spacing **20–24pt**  
-- No sidebar, no tab bar, no dual tables fighting for height  
+- Size: ~ **820×560** (min ~740×500)  
+- Structure: **left settings + activity / right app list** (HSplitView)  
+- Copy stays short; no long helper paragraphs  
 
-**Section order (top → bottom):**
+**Left (~280px):**
 
-1. **状态** — 监控开关；一行次要状态（今日优化次数 · 后台阈值摘要）  
-2. **通用** — 后台秒数（步进器或带单位字段）；登录时启动  
-3. **权限** — 辅助功能状态 +「打开系统设置…」  
-4. **应用名单** — 主列表（应用图标+名称+策略）；工具栏：添加 / 移除；行内或菜单切换策略与启用  
-5. **最近活动** — 紧凑日志列表（时间 · 应用 · 事件），固定最大高度，可滚动  
+1. **通用** — 启用监控 · 登录时启动 · 触发时间（秒）`− N +` · 隐藏模式（全局单选：隐藏/最小化）  
+2. **最小化辅助功能** — only when 隐藏模式=最小化；已授权 / 去授权  
+3. **最近活动** — fills remaining height; single-line rows; scroll indicators hidden  
+
+**Right:**
+
+- **应用名单** — ✓ · icon · name · 移除；header **添加** button  
+- Global optimize action (not per-app)  
 
 ### Menu bar
 

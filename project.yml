@@ -15,6 +15,9 @@ targets:
     platform: macOS
     sources:
       - path: RenderPausePro
+        excludes:
+          - "Resources/AppIcon.iconset"
+          - "Resources/AppIcon.iconset/**"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.renderpause.pro

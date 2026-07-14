@@ -11,12 +11,14 @@ final class SettingsStoreTests: XCTestCase {
             $0.hasCompletedOnboarding = true
             $0.launchAtLogin = false
             $0.backgroundSeconds = 45
+            $0.optimizeAction = .minimize
         }
         let reloaded = SettingsStore(defaults: defaults)
         XCTAssertFalse(reloaded.settings.monitoringEnabled)
         XCTAssertTrue(reloaded.settings.hasCompletedOnboarding)
         XCTAssertFalse(reloaded.settings.launchAtLogin)
         XCTAssertEqual(reloaded.settings.backgroundSeconds, 45)
+        XCTAssertEqual(reloaded.settings.optimizeAction, .minimize)
         defaults.removePersistentDomain(forName: suite)
     }
 

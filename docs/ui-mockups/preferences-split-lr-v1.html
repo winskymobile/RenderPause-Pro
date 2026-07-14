@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RenderPause Pro · 左右分栏偏好设置</title>
+<style>
+  :root {
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", sans-serif;
+    --bg-window: #e8e8ed;
+    --bg-left: #f2f2f7;
+    --bg-right: #ffffff;
+    --bg-card: #ffffff;
+    --bg-row-hover: rgba(0, 0, 0, 0.035);
+    --line: rgba(0, 0, 0, 0.08);
+    --label: rgba(0, 0, 0, 0.88);
+    --sec: rgba(0, 0, 0, 0.52);
+    --ter: rgba(0, 0, 0, 0.34);
+    --accent: #007aff;
+    --green: #34c759;
+    --shadow: 0 22px 56px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+    --radius: 10px;
+    /* Quiet activity surface — secondary to 通用 card */
+    --bg-activity: rgba(0, 0, 0, 0.028);
+    --line-activity: rgba(0, 0, 0, 0.05);
+    --activity-title: rgba(0, 0, 0, 0.40);
+    --activity-body: rgba(0, 0, 0, 0.42);
+    --activity-meta: rgba(0, 0, 0, 0.30);
+  }
+  html[data-theme="dark"] {
+    --bg-window: #1c1c1e;
+    --bg-left: #242426;
+    --bg-right: #1e1e20;
+    --bg-card: #2c2c2e;
+    --bg-row-hover: rgba(255, 255, 255, 0.05);
+    --line: rgba(255, 255, 255, 0.08);
+    --label: rgba(255, 255, 255, 0.92);
+    --sec: rgba(255, 255, 255, 0.55);
+    --ter: rgba(255, 255, 255, 0.34);
+    --accent: #0a84ff;
+    --green: #30d158;
+    --shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+    --bg-activity: rgba(255, 255, 255, 0.03);
+    --line-activity: rgba(255, 255, 255, 0.05);
+    --activity-title: rgba(255, 255, 255, 0.38);
+    --activity-body: rgba(255, 255, 255, 0.42);
+    --activity-meta: rgba(255, 255, 255, 0.28);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font);
+    color: var(--label);
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(900px 480px at 18% 0%, rgba(120, 150, 220, 0.16), transparent 55%),
+      linear-gradient(165deg, #c9d1de 0%, #9eabc0 100%);
+  }
+  html[data-theme="dark"] body {
+    background:
+      radial-gradient(900px 480px at 15% 0%, rgba(50, 80, 140, 0.28), transparent 55%),
+      linear-gradient(165deg, #0e1014 0%, #181b22 100%);
+  }
+
+  .stage {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 36px 20px 48px;
+    gap: 14px;
+  }
+  .meta {
+    width: min(820px, 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    color: rgba(0,0,0,0.5);
+    font-size: 12px;
+  }
+  html[data-theme="dark"] .meta { color: rgba(255,255,255,0.45); }
+  .meta h1 { margin: 0 0 4px; font-size: 15px; font-weight: 650; color: inherit; opacity: 0.95; }
+  .meta p { margin: 0; max-width: 52ch; line-height: 1.45; }
+  .chip {
+    border: 0; border-radius: 999px; padding: 6px 12px;
+    font: inherit; font-size: 12px; cursor: pointer;
+    background: rgba(255,255,255,0.55); color: #1c1c1e;
+  }
+  html[data-theme="dark"] .chip { background: rgba(255,255,255,0.1); color: #f5f5f7; }
+
+  /* Window */
+  .win {
+    width: min(820px, 100%);
+    height: 560px;
+    border-radius: 12px;
+    background: var(--bg-window);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 0.5px solid rgba(0,0,0,0.08);
+  }
+  html[data-theme="dark"] .win { border-color: rgba(255,255,255,0.08); }
+
+  .tb {
+    height: 48px;
+    display: grid;
+    grid-template-columns: 72px 1fr 72px;
+    align-items: center;
+    padding: 0 14px;
+    border-bottom: 0.5px solid var(--line);
+    background: color-mix(in srgb, var(--bg-window) 90%, transparent);
+    backdrop-filter: blur(16px);
+    flex-shrink: 0;
+  }
+  .dots { display: flex; gap: 8px; }
+  .d { width: 12px; height: 12px; border-radius: 50%; }
+  .c { background: #ff5f57; } .m { background: #febc2e; } .z { background: #28c840; }
+  .title { text-align: center; font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+
+  .body {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+  }
+
+  /* LEFT: settings */
+  .left {
+    background: var(--bg-left);
+    border-right: 0.5px solid var(--line);
+    padding: 18px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    overflow: auto;
+  }
+  .col-title {
+    margin: 0 0 2px 2px;
+    font-size: 11px;
+    font-weight: 650;
+    color: var(--sec);
+    letter-spacing: 0.01em;
+  }
+  .card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: 0 0 0 0.5px var(--line);
+    overflow: hidden;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .row + .row { border-top: 0.5px solid var(--line); }
+  .row .label { min-width: 0; }
+  .row .hint {
+    display: block;
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--ter);
+    line-height: 1.3;
+  }
+
+  .sw {
+    width: 36px; height: 21px; border-radius: 999px;
+    background: rgba(120,120,128,0.32); position: relative;
+    flex-shrink: 0; cursor: pointer; border: 0; padding: 0;
+  }
+  .sw.on { background: var(--green); }
+  .sw::after {
+    content: ""; position: absolute; top: 2px; left: 2px;
+    width: 17px; height: 17px; border-radius: 50%; background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    transition: transform 160ms cubic-bezier(0.16,1,0.3,1);
+  }
+  .sw.on::after { transform: translateX(15px); }
+
+  .inline {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--sec); font-size: 13px; flex-shrink: 0;
+  }
+  .field {
+    width: 42px; height: 24px; border-radius: 5px;
+    border: 0.5px solid var(--line); background: transparent;
+    color: var(--label); text-align: right; font: inherit;
+    font-variant-numeric: tabular-nums; padding: 0 6px;
+  }
+  .seconds-control { gap: 4px; }
+  .step-btn {
+    width: 22px; height: 22px; border: 0; border-radius: 5px;
+    background: transparent; color: var(--label); cursor: pointer;
+    font-size: 14px; line-height: 1;
+    box-shadow: inset 0 0 0 0.5px var(--line);
+    display: grid; place-items: center; padding: 0;
+  }
+  .step-btn:hover { background: rgba(0,0,0,0.04); }
+  html[data-theme="dark"] .step-btn:hover { background: rgba(255,255,255,0.08); }
+  .seconds-control .field { text-align: center; }
+
+  .link {
+    border: 0; background: none; padding: 0;
+    color: var(--accent); font: inherit; font-size: 13px;
+    cursor: pointer;
+  }
+  .radio-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .radio-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--label);
+    user-select: none;
+  }
+  .radio-group input {
+    accent-color: var(--accent);
+    margin: 0;
+    width: 14px;
+    height: 14px;
+  }
+  .status-text { font-size: 13px; color: var(--sec); }
+
+  /* ── 最近活动 (quiet secondary surface) ── */
+  .activity-block {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 2px;
+  }
+  .activity-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0 4px 5px;
+  }
+  .activity-head h3 {
+    margin: 0;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--activity-title);
+  }
+  .pill {
+    font-size: 10.5px;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    color: var(--activity-meta);
+    background: none;
+    padding: 0;
+  }
+  .log {
+    display: flex;
+    flex-direction: column;
+  }
+  /* Softer than 通用 card: wash fill, no hard border */
+  .activity-block .card.log {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background: var(--bg-activity);
+    border-radius: 8px;
+    box-shadow: none;
+    border: 0.5px solid var(--line-activity);
+  }
+  .log-item {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: 6px;
+    align-items: center;
+    min-height: 26px;
+    padding: 0 10px;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .log-item + .log-item {
+    border-top: 0.5px solid var(--line-activity);
+  }
+  .log-time {
+    font-variant-numeric: tabular-nums;
+    color: var(--activity-meta);
+    font-size: 10.5px;
+  }
+  .log-title {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--activity-body);
+  }
+  .log-sub {
+    font-size: 10.5px;
+    color: var(--activity-meta);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 56px;
+    text-align: right;
+  }
+
+  /* RIGHT: apps */
+  .right {
+    background: var(--bg-right);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .r-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px 12px;
+    flex-shrink: 0;
+  }
+  .r-head h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+  .r-head p {
+    margin: 3px 0 0;
+    font-size: 12px;
+    color: var(--sec);
+    line-height: 1.35;
+  }
+  .btn {
+    appearance: none; border: 0; border-radius: 6px;
+    padding: 5px 12px; font: inherit; font-size: 12.5px; font-weight: 500;
+    cursor: pointer;
+    background: color-mix(in srgb, var(--bg-card) 70%, #cfcfd4);
+    color: var(--label);
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.1);
+  }
+  html[data-theme="dark"] .btn {
+    background: #3a3a3c;
+    box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.08);
+  }
+  .btn.primary {
+    background: var(--accent); color: #fff; box-shadow: none;
+  }
+
+  .list {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    margin: 0 14px 16px;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: 0 0 0 0.5px var(--line);
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 22px 28px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+  }
+  .app + .app { border-top: 0.5px solid var(--line); }
+  .app:hover { background: var(--bg-row-hover); }
+
+  .check {
+    width: 20px; height: 20px; border: 0; background: transparent;
+    padding: 0; cursor: pointer; color: var(--accent); display: grid; place-items: center;
+  }
+  .check.off { color: rgba(120,120,128,0.55); }
+  .check svg { width: 18px; height: 18px; }
+
+  .ico {
+    width: 28px; height: 28px; border-radius: 7px;
+    display: grid; place-items: center; color: #fff;
+    font-size: 12px; font-weight: 700;
+  }
+  .name {
+    font-size: 13px; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .menu {
+    appearance: none; border: 0; width: 100%;
+    background: color-mix(in srgb, var(--bg-left) 80%, transparent);
+    color: var(--label); font: inherit; font-size: 12px;
+    padding: 4px 8px; border-radius: 6px;
+    box-shadow: inset 0 0 0 0.5px var(--line); cursor: pointer;
+  }
+  .remove {
+    border: 0; background: none; padding: 2px 4px;
+    font: inherit; font-size: 12px; color: var(--sec);
+    cursor: pointer; white-space: nowrap;
+  }
+  .remove:hover { color: var(--label); }
+
+  .empty {
+    height: 100%;
+    min-height: 280px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 32px;
+    color: var(--sec);
+  }
+  .empty h3 { margin: 0 0 6px; font-size: 15px; color: var(--label); }
+  .empty p { margin: 0 0 14px; font-size: 12.5px; max-width: 28ch; line-height: 1.45; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sw::after { transition: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="meta">
+      <div>
+        <h1>左右分栏 · HTML 初稿（impeccable / product）</h1>
+        <p>左：通用为主 · 最近活动弱化次级区。右：应用名单主工作区。</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="chip" id="theme" type="button">浅色 / 深色</button>
+        <button class="chip" id="empty" type="button">空名单</button>
+      </div>
+    </div>
+
+    <div class="win" role="dialog" aria-label="RenderPause Pro 偏好设置">
+      <div class="tb">
+        <div class="dots" aria-hidden="true">
+          <span class="d c"></span><span class="d m"></span><span class="d z"></span>
+        </div>
+        <div class="title">RenderPause Pro</div>
+        <div></div>
+      </div>
+
+      <div class="body">
+        <!-- LEFT -->
+        <aside class="left">
+          <div>
+            <div class="col-title">通用</div>
+            <div class="card">
+              <div class="row">
+                <div class="label">启用监控</div>
+                <button class="sw on" type="button" aria-label="启用监控" aria-pressed="true"></button>
+              </div>
+              <div class="row">
+                <div class="label">登录时启动</div>
+                <button class="sw on" type="button" aria-label="登录时启动" aria-pressed="true"></button>
+              </div>
+              <div class="row">
+                <div class="label">触发时间（秒）</div>
+                <div class="inline seconds-control">
+                  <button type="button" class="step-btn" data-d="-5" aria-label="减少">−</button>
+                  <input class="field" id="sec" value="30" inputmode="numeric" aria-label="触发时间秒数" />
+                  <button type="button" class="step-btn" data-d="5" aria-label="增加">+</button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">隐藏模式</div>
+                <div class="radio-group" role="radiogroup" aria-label="隐藏模式">
+                  <label><input type="radio" name="action" value="hide" id="actHide" checked /> 隐藏</label>
+                  <label><input type="radio" name="action" value="minimize" id="actMin" /> 最小化</label>
+                </div>
+              </div>
+              <div class="row" id="axRow" hidden>
+                <div class="label">最小化辅助功能</div>
+                <div>
+                  <span class="status-text" id="axText" hidden>已授权</span>
+                  <button class="link" id="axLink" type="button">去授权</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="activity-block">
+            <div class="activity-head">
+              <h3>最近活动</h3>
+              <span class="pill">今日 12 次</span>
+            </div>
+            <div class="card log" id="logCard">
+              <div class="log-item">
+                <div class="log-time">22:14</div>
+                <div class="log-title">Pencil · 已优化</div>
+                <div class="log-sub">+32s</div>
+              </div>
+              <div class="log-item">
+                <div class="log-time">22:18</div>
+                <div class="log-title">Pencil · 已恢复</div>
+                <div class="log-sub">激活</div>
+              </div>
+              <div class="log-item">
+                <div class="log-time">22:41</div>
+                <div class="log-title">腾讯文档 · 已优化</div>
+                <div class="log-sub">+30s</div>
+              </div>
+              <div class="log-item">
+                <div class="log-time">22:55</div>
+                <div class="log-title">Figma · 错误</div>
+                <div class="log-sub">需授权</div>
+              </div>
+              <div class="log-item">
+                <div class="log-time">23:01</div>
+                <div class="log-title">Discord · 已优化</div>
+                <div class="log-sub">已隐藏</div>
+              </div>
+              <div class="log-item">
+                <div class="log-time">23:12</div>
+                <div class="log-title">腾讯文档 · 已恢复</div>
+                <div class="log-sub">激活</div>
+              </div>
+              <div class="log-item">
+                <div class="log-time">23:20</div>
+                <div class="log-title">Pencil · 已优化</div>
+                <div class="log-sub">+30s</div>
+              </div>
+              <div class="log-item">
+                <div class="log-time">23:28</div>
+                <div class="log-title">Discord · 已恢复</div>
+                <div class="log-sub">激活</div>
+              </div>
+              <div class="log-item">
+                <div class="log-time">23:35</div>
+                <div class="log-title">Figma · 已优化</div>
+                <div class="log-sub">+45s</div>
+              </div>
+              <div class="log-item">
+                <div class="log-time">23:42</div>
+                <div class="log-title">Pencil · 已恢复</div>
+                <div class="log-sub">激活</div>
+              </div>
+              <div class="log-item">
+                <div class="log-time">23:50</div>
+                <div class="log-title">腾讯文档 · 已优化</div>
+                <div class="log-sub">+30s</div>
+              </div>
+              <div class="log-item">
+                <div class="log-time">23:58</div>
+                <div class="log-title">Discord · 已优化</div>
+                <div class="log-sub">+31s</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- RIGHT -->
+        <section class="right">
+          <div class="r-head">
+            <div>
+              <h2>应用名单</h2>
+              <p>启用或移除名单中的应用</p>
+            </div>
+            <button class="btn primary" type="button" id="addBtn">添加</button>
+          </div>
+
+          <div class="list" id="listFilled">
+            <div class="app">
+              <button class="check" type="button" aria-label="启用" title="已启用">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Zm3.7 6.2-4.2 5a.75.75 0 0 1-1.14.04l-2-2.2a.75.75 0 1 1 1.12-1l1.4 1.54 3.66-4.35a.75.75 0 1 1 1.16.97Z"/></svg>
+              </button>
+              <div class="ico" style="background:linear-gradient(145deg,#5b8def,#2f5fd0)">P</div>
+              <div class="name">Pencil</div>
+              <button class="remove" type="button">移除</button>
+            </div>
+            <div class="app">
+              <button class="check" type="button" aria-label="启用">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Zm3.7 6.2-4.2 5a.75.75 0 0 1-1.14.04l-2-2.2a.75.75 0 1 1 1.12-1l1.4 1.54 3.66-4.35a.75.75 0 1 1 1.16.97Z"/></svg>
+              </button>
+              <div class="ico" style="background:linear-gradient(145deg,#3ecf8e,#1f9b63)">腾</div>
+              <div class="name">腾讯文档</div>
+              <button class="remove" type="button">移除</button>
+            </div>
+            <div class="app">
+              <button class="check off" type="button" aria-label="未启用" title="未启用">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7.25"/></svg>
+              </button>
+              <div class="ico" style="background:linear-gradient(145deg,#f24e1e,#a259ff)">F</div>
+              <div class="name">Figma</div>
+              <button class="remove" type="button">移除</button>
+            </div>
+            <div class="app">
+              <button class="check" type="button" aria-label="启用">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Zm3.7 6.2-4.2 5a.75.75 0 0 1-1.14.04l-2-2.2a.75.75 0 1 1 1.12-1l1.4 1.54 3.66-4.35a.75.75 0 1 1 1.16.97Z"/></svg>
+              </button>
+              <div class="ico" style="background:linear-gradient(145deg,#5865f2,#404eed)">D</div>
+              <div class="name">Discord</div>
+              <button class="remove" type="button">移除</button>
+            </div>
+          </div>
+
+          <div class="list" id="listEmpty" hidden>
+            <div class="empty">
+              <div>
+                <h3>还没有应用</h3>
+                <p>添加需要在后台自动隐藏或最小化的应用。</p>
+                <button class="btn primary" type="button">添加</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    let axTrusted = false;
+    function renderAX() {
+      const minimize = document.getElementById('actMin').checked;
+      const axRow = document.getElementById('axRow');
+      axRow.hidden = !minimize;
+      if (!minimize) return;
+      document.getElementById('axText').hidden = !axTrusted;
+      document.getElementById('axLink').hidden = axTrusted;
+    }
+    document.querySelectorAll('input[name="action"]').forEach(r => {
+      r.addEventListener('change', renderAX);
+    });
+    renderAX();
+    document.getElementById('axLink').onclick = () => {
+      axTrusted = true; // mock
+      renderAX();
+    };
+
+    document.getElementById('theme').onclick = () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    };
+
+    const filled = document.getElementById('listFilled');
+    const empty = document.getElementById('listEmpty');
+    document.getElementById('empty').onclick = () => {
+      const showEmpty = empty.hidden;
+      empty.hidden = !showEmpty;
+      filled.hidden = showEmpty;
+    };
+
+    document.querySelectorAll('.sw').forEach(sw => {
+      sw.onclick = () => {
+        const on = sw.classList.toggle('on');
+        sw.setAttribute('aria-pressed', on ? 'true' : 'false');
+      };
+    });
+
+    document.querySelectorAll('.check').forEach(btn => {
+      btn.onclick = () => {
+        const off = btn.classList.toggle('off');
+        btn.innerHTML = off
+          ? '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7.25"/></svg>'
+          : '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Zm3.7 6.2-4.2 5a.75.75 0 0 1-1.14.04l-2-2.2a.75.75 0 1 1 1.12-1l1.4 1.54 3.66-4.35a.75.75 0 1 1 1.16.97Z"/></svg>';
+      };
+    });
+
+    const field = document.getElementById('sec');
+    const clamp = v => Math.min(600, Math.max(5, Math.round(Number(v) || 30)));
+    document.querySelectorAll('.step-btn').forEach(b => {
+      b.onclick = () => { field.value = String(clamp(Number(field.value) + Number(b.dataset.d))); };
+    });
+    field.onchange = () => { field.value = String(clamp(field.value)); };
+  </script>
+</body>
+</html>

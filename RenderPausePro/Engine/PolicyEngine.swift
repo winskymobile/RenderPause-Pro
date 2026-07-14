@@ -29,6 +29,9 @@ final class PolicyEngine {
         }
 
         let threshold = settingsStore.settings.backgroundSeconds
+        let action: OptimizeAction = FeatureFlags.allowMinimizeMode
+            ? settingsStore.settings.optimizeAction
+            : .hide
 
         for rule in ruleStore.rules {
             if let app = runningByID[rule.bundleID], app.isFinished {
@@ -42,7 +45,7 @@ final class PolicyEngine {
 
             if !rule.enabled {
                 if sessionStore.state(for: rule.bundleID) == .optimized {
-                    commands.append(.restore(bundleID: rule.bundleID, action: rule.action, reason: "disabled"))
+                    commands.append(.restore(bundleID: rule.bundleID, action: action, reason: "disabled"))
                 }
                 commands.append(.setState(bundleID: rule.bundleID, state: .paused))
                 continue
@@ -53,7 +56,7 @@ final class PolicyEngine {
 
             if isFront {
                 if sessionStore.state(for: rule.bundleID) == .optimized {
-                    commands.append(.restore(bundleID: rule.bundleID, action: rule.action, reason: "activated"))
+                    commands.append(.restore(bundleID: rule.bundleID, action: action, reason: "activated"))
                 }
                 commands.append(.setState(bundleID: rule.bundleID, state: .watched))
                 continue
@@ -68,7 +71,7 @@ final class PolicyEngine {
                 continue
             }
 
-            if rule.action == .hide && app.isHidden {
+            if action == .hide && app.isHidden {
                 commands.append(.setState(bundleID: rule.bundleID, state: .optimized))
                 continue
             }
@@ -76,7 +79,7 @@ final class PolicyEngine {
             if app.secondsSinceDeactivated >= threshold {
                 commands.append(.optimize(
                     bundleID: rule.bundleID,
-                    action: rule.action,
+                    action: action,
                     reason: "background+\(Int(app.secondsSinceDeactivated))s"
                 ))
                 commands.append(.setState(bundleID: rule.bundleID, state: .optimized))

@@ -49,7 +49,7 @@ final class UIAppModel: ObservableObject {
     func refresh() {
         rules = controller.ruleStore.rules
         settings = controller.settingsStore.settings
-        logEntries = Array(controller.actionLog.entries.prefix(40))
+        logEntries = Array(controller.actionLog.entries.prefix(80))
         todayOptimizeCount = controller.actionLog.todayOptimizeCount()
         accessibilityTrusted = PermissionGate.isAccessibilityTrusted()
     }
@@ -83,7 +83,17 @@ final class UIAppModel: ObservableObject {
         controller.settingsStore.update { $0.backgroundSeconds = value }
     }
 
+    func setOptimizeAction(_ action: OptimizeAction) {
+        controller.settingsStore.update { $0.optimizeAction = action }
+    }
+
     func openAccessibilitySettings() {
+        PermissionGate.openAccessibilitySettings()
+        refreshLight()
+    }
+
+    /// Prompt for Accessibility trust (or open settings if prompt unavailable).
+    func requestAccessibilityAuthorization() {
         _ = PermissionGate.isAccessibilityTrusted(prompt: true)
         PermissionGate.openAccessibilitySettings()
         refreshLight()
@@ -120,6 +130,12 @@ final class UIAppModel: ObservableObject {
             controller.ruleStore.remove(bundleID: id)
         }
         selectedRuleIDs.removeAll()
+        refresh()
+    }
+
+    func removeRule(bundleID: String) {
+        controller.ruleStore.remove(bundleID: bundleID)
+        selectedRuleIDs.remove(bundleID)
         refresh()
     }
 

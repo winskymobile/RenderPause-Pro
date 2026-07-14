@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RenderPause Pro — 偏好设置 · HTML 初稿</title>
+<style>
+  :root {
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", sans-serif;
+    --radius-window: 12px;
+    --radius-group: 10px;
+    --radius-control: 6px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --duration: 160ms;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html[data-theme="light"] {
+    --bg-window: #ececec;
+    --bg-content: #f5f5f7;
+    --bg-group: rgba(255, 255, 255, 0.72);
+    --bg-group-solid: #ffffff;
+    --bg-row-hover: rgba(0, 0, 0, 0.04);
+    --bg-row-selected: rgba(0, 122, 255, 0.12);
+    --bg-segment: rgba(0, 0, 0, 0.06);
+    --bg-segment-active: #ffffff;
+    --label: rgba(0, 0, 0, 0.85);
+    --secondary: rgba(0, 0, 0, 0.55);
+    --tertiary: rgba(0, 0, 0, 0.35);
+    --separator: rgba(0, 0, 0, 0.08);
+    --accent: #007aff;
+    --accent-text: #ffffff;
+    --shadow-window: 0 18px 48px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-group: 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+    --traffic-close: #ff5f57;
+    --traffic-min: #febc2e;
+    --traffic-zoom: #28c840;
+    --toolbar-border: rgba(0, 0, 0, 0.08);
+  }
+
+  html[data-theme="dark"] {
+    --bg-window: #1e1e1e;
+    --bg-content: #242424;
+    --bg-group: rgba(44, 44, 46, 0.92);
+    --bg-group-solid: #2c2c2e;
+    --bg-row-hover: rgba(255, 255, 255, 0.05);
+    --bg-row-selected: rgba(10, 132, 255, 0.22);
+    --bg-segment: rgba(255, 255, 255, 0.08);
+    --bg-segment-active: #636366;
+    --label: rgba(255, 255, 255, 0.92);
+    --secondary: rgba(255, 255, 255, 0.55);
+    --tertiary: rgba(255, 255, 255, 0.32);
+    --separator: rgba(255, 255, 255, 0.08);
+    --accent: #0a84ff;
+    --accent-text: #ffffff;
+    --shadow-window: 0 22px 60px rgba(0, 0, 0, 0.55), 0 2px 10px rgba(0, 0, 0, 0.35);
+    --shadow-group: 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+    --traffic-close: #ff5f57;
+    --traffic-min: #febc2e;
+    --traffic-zoom: #28c840;
+    --toolbar-border: rgba(255, 255, 255, 0.08);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    font-family: var(--font);
+    background:
+      radial-gradient(1200px 600px at 20% 0%, rgba(120, 160, 255, 0.12), transparent 55%),
+      radial-gradient(900px 500px at 90% 20%, rgba(180, 140, 255, 0.08), transparent 50%),
+      linear-gradient(180deg, #cfd6e0 0%, #aeb8c6 100%);
+    color: var(--label);
+    -webkit-font-smoothing: antialiased;
+  }
+  html[data-theme="dark"] body {
+    background:
+      radial-gradient(1000px 500px at 15% 0%, rgba(60, 90, 160, 0.25), transparent 55%),
+      linear-gradient(180deg, #0f1115 0%, #1a1d24 100%);
+  }
+
+  .stage {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 40px 24px 56px;
+    gap: 20px;
+  }
+
+  .meta {
+    width: min(560px, 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    color: rgba(0,0,0,0.55);
+    font-size: 12px;
+  }
+  html[data-theme="dark"] .meta { color: rgba(255,255,255,0.45); }
+  .meta h1 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: inherit;
+    opacity: 0.9;
+  }
+  .meta p { margin: 0; line-height: 1.4; max-width: 36ch; }
+  .meta-actions { display: flex; gap: 8px; align-items: center; }
+
+  .chip {
+    border: 0;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    background: rgba(255,255,255,0.55);
+    color: #1c1c1e;
+    backdrop-filter: blur(12px);
+    transition: transform var(--duration) var(--ease), opacity var(--duration) var(--ease);
+  }
+  html[data-theme="dark"] .chip {
+    background: rgba(255,255,255,0.1);
+    color: #f5f5f7;
+  }
+  .chip:hover { transform: translateY(-1px); }
+  .chip[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  /* Window chrome */
+  .window {
+    width: min(560px, 100%);
+    height: 620px;
+    border-radius: var(--radius-window);
+    background: var(--bg-window);
+    box-shadow: var(--shadow-window);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 0.5px solid rgba(0,0,0,0.08);
+  }
+  html[data-theme="dark"] .window {
+    border-color: rgba(255,255,255,0.08);
+  }
+
+  .titlebar {
+    height: 52px;
+    display: grid;
+    grid-template-columns: 68px 1fr 68px;
+    align-items: center;
+    padding: 0 14px;
+    border-bottom: 0.5px solid var(--toolbar-border);
+    background: color-mix(in srgb, var(--bg-window) 88%, transparent);
+    backdrop-filter: blur(20px);
+    flex-shrink: 0;
+  }
+  .traffic {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  .dot.close { background: var(--traffic-close); }
+  .dot.min { background: var(--traffic-min); }
+  .dot.zoom { background: var(--traffic-zoom); }
+
+  .title {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--label);
+  }
+
+  .segment {
+    margin: 0 20px 0;
+    padding: 3px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--bg-segment);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .segment button {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--secondary);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background var(--duration) var(--ease), color var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
+  }
+  .segment button[aria-selected="true"] {
+    background: var(--bg-segment-active);
+    color: var(--label);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.04);
+  }
+  html[data-theme="dark"] .segment button[aria-selected="true"] {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.35);
+  }
+
+  .content {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    background: var(--bg-content);
+    padding: 18px 20px 24px;
+  }
+
+  .panel { display: none; animation: fadeIn 180ms var(--ease); }
+  .panel.active { display: flex; flex-direction: column; gap: 16px; min-height: 100%; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .panel { animation: none; }
+    .chip:hover { transform: none; }
+  }
+
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .page-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .page-header p {
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    color: var(--secondary);
+    line-height: 1.45;
+    max-width: 36ch;
+  }
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  .btn {
+    appearance: none;
+    border: 0;
+    border-radius: var(--radius-control);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 5px 12px;
+    cursor: pointer;
+    background: color-mix(in srgb, var(--bg-group-solid) 80%, #d0d0d0);
+    color: var(--label);
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.12);
+    transition: filter var(--duration) var(--ease);
+  }
+  html[data-theme="dark"] .btn {
+    background: #3a3a3c;
+    box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.08);
+  }
+  .btn:hover { filter: brightness(1.03); }
+  .btn:disabled { opacity: 0.4; cursor: default; }
+  .btn.primary {
+    background: var(--accent);
+    color: var(--accent-text);
+    box-shadow: none;
+  }
+
+  .group {
+    background: var(--bg-group-solid);
+    border-radius: var(--radius-group);
+    box-shadow: var(--shadow-group);
+    overflow: hidden;
+  }
+  .group-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--secondary);
+    margin: 0 0 6px 4px;
+    text-transform: none;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 40px;
+    padding: 8px 14px;
+  }
+  .row + .row { border-top: 0.5px solid var(--separator); }
+  .row .label {
+    flex: 1;
+    font-size: 13px;
+    min-width: 0;
+  }
+  .row .hint {
+    font-size: 12px;
+    color: var(--secondary);
+    line-height: 1.4;
+  }
+  .trailing {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--secondary);
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  /* Switch */
+  .switch {
+    width: 38px;
+    height: 22px;
+    border-radius: 999px;
+    background: rgba(120,120,128,0.32);
+    position: relative;
+    cursor: pointer;
+    transition: background var(--duration) var(--ease);
+    flex-shrink: 0;
+  }
+  .switch[aria-checked="true"] { background: #34c759; }
+  html[data-theme="dark"] .switch[aria-checked="true"] { background: #30d158; }
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    transition: transform var(--duration) var(--ease);
+  }
+  .switch[aria-checked="true"]::after { transform: translateX(16px); }
+
+  .field {
+    width: 48px;
+    height: 24px;
+    border-radius: 5px;
+    border: 0.5px solid var(--separator);
+    background: color-mix(in srgb, var(--bg-content) 70%, transparent);
+    color: var(--label);
+    text-align: right;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    padding: 0 6px;
+  }
+  .stepper {
+    display: inline-flex;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 0.5px var(--separator);
+  }
+  .stepper button {
+    width: 22px;
+    height: 22px;
+    border: 0;
+    background: transparent;
+    color: var(--label);
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+  }
+  .stepper button + button { border-left: 0.5px solid var(--separator); }
+
+  /* Apps list */
+  .list-shell {
+    flex: 1;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+  }
+  .list {
+    flex: 1;
+    overflow: auto;
+    background: var(--bg-group-solid);
+    border-radius: var(--radius-group);
+    box-shadow: var(--shadow-group);
+  }
+  .app-row {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) 92px 42px;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 14px;
+    cursor: default;
+  }
+  .app-row + .app-row { border-top: 0.5px solid var(--separator); }
+  .app-row:hover { background: var(--bg-row-hover); }
+  .app-row.selected { background: var(--bg-row-selected); }
+  .app-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .app-name {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .app-id {
+    font-size: 11px;
+    color: var(--tertiary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+  .menu {
+    appearance: none;
+    border: 0;
+    background: color-mix(in srgb, var(--bg-content) 80%, transparent);
+    color: var(--label);
+    font: inherit;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    box-shadow: inset 0 0 0 0.5px var(--separator);
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .empty {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--secondary);
+  }
+  .empty .glyph {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--bg-group-solid) 40%, var(--bg-content));
+    display: grid;
+    place-items: center;
+    margin: 0 auto 14px;
+    font-size: 22px;
+    color: var(--tertiary);
+    box-shadow: var(--shadow-group);
+  }
+  .empty h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--label);
+  }
+  .empty p {
+    margin: 0 0 16px;
+    font-size: 12.5px;
+    max-width: 28ch;
+    line-height: 1.45;
+  }
+
+  /* Activity */
+  .stat-pill {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--secondary);
+    background: var(--bg-segment);
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .log-row {
+    display: grid;
+    grid-template-columns: 64px 96px 56px minmax(0, 1fr);
+    gap: 10px;
+    align-items: baseline;
+    padding: 9px 14px;
+    font-size: 12.5px;
+  }
+  .log-row + .log-row { border-top: 0.5px solid var(--separator); }
+  .log-time {
+    font-variant-numeric: tabular-nums;
+    color: var(--secondary);
+    font-size: 11.5px;
+  }
+  .log-app { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .log-event { color: var(--secondary); }
+  .log-reason {
+    color: var(--tertiary);
+    font-size: 11.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+  }
+
+  .footnote {
+    font-size: 11.5px;
+    color: var(--tertiary);
+    line-height: 1.4;
+    margin: 2px 4px 0;
+  }
+
+  .perm-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .perm-line .btn { flex-shrink: 0; }
+  .perm-line .hint { flex: 1; min-width: 180px; }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #34c759;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .status-dot.off { background: #8e8e93; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="meta">
+      <div>
+        <h1>RenderPause Pro · 偏好设置 HTML 初稿</h1>
+        <p>impeccable · product register · 冷静系统向 · 三 Tab · 功能映射现有引擎</p>
+      </div>
+      <div class="meta-actions">
+        <button class="chip" id="themeToggle" type="button" aria-pressed="false">浅色 / 深色</button>
+        <button class="chip" id="emptyToggle" type="button" aria-pressed="false">空名单</button>
+      </div>
+    </div>
+
+    <div class="window" role="dialog" aria-label="RenderPause Pro 偏好设置">
+      <div class="titlebar">
+        <div class="traffic" aria-hidden="true">
+          <span class="dot close"></span>
+          <span class="dot min"></span>
+          <span class="dot zoom"></span>
+        </div>
+        <div class="title">RenderPause Pro</div>
+        <div></div>
+      </div>
+
+      <div class="segment" role="tablist" aria-label="偏好分页">
+        <button type="button" role="tab" data-tab="apps" aria-selected="true">应用名单</button>
+        <button type="button" role="tab" data-tab="settings" aria-selected="false">设置</button>
+        <button type="button" role="tab" data-tab="activity" aria-selected="false">最近活动</button>
+      </div>
+
+      <div class="content">
+        <!-- APPS -->
+        <section class="panel active" id="panel-apps" role="tabpanel">
+          <div class="page-header">
+            <div>
+              <h2>应用名单</h2>
+              <p>仅名单内的应用会在离开前台且完全遮挡后被自动优化。</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn" type="button">添加…</button>
+              <button class="btn" type="button" id="removeBtn" disabled>移除</button>
+            </div>
+          </div>
+
+          <div class="list-shell" id="appsFilled">
+            <div class="list" id="appList">
+              <div class="app-row selected" data-id="1" tabindex="0">
+                <div class="app-icon" style="background: linear-gradient(145deg,#5b8def,#2f5fd0)">P</div>
+                <div>
+                  <div class="app-name">Pencil</div>
+                  <div class="app-id">com.highcaffeinecontent.pencil</div>
+                </div>
+                <select class="menu" aria-label="Pencil 策略">
+                  <option selected>隐藏</option>
+                  <option>最小化</option>
+                </select>
+                <div class="switch" role="switch" aria-checked="true" aria-label="启用 Pencil"></div>
+              </div>
+              <div class="app-row" data-id="2" tabindex="0">
+                <div class="app-icon" style="background: linear-gradient(145deg,#3ecf8e,#1f9b63)">腾</div>
+                <div>
+                  <div class="app-name">腾讯文档</div>
+                  <div class="app-id">com.tencent.mac.tdocs</div>
+                </div>
+                <select class="menu" aria-label="腾讯文档 策略">
+                  <option selected>隐藏</option>
+                  <option>最小化</option>
+                </select>
+                <div class="switch" role="switch" aria-checked="true" aria-label="启用 腾讯文档"></div>
+              </div>
+              <div class="app-row" data-id="3" tabindex="0">
+                <div class="app-icon" style="background: linear-gradient(145deg,#f24e1e,#a259ff)">F</div>
+                <div>
+                  <div class="app-name">Figma</div>
+                  <div class="app-id">com.figma.Desktop</div>
+                </div>
+                <select class="menu" aria-label="Figma 策略">
+                  <option>隐藏</option>
+                  <option selected>最小化</option>
+                </select>
+                <div class="switch" role="switch" aria-checked="false" aria-label="启用 Figma"></div>
+              </div>
+              <div class="app-row" data-id="4" tabindex="0">
+                <div class="app-icon" style="background: linear-gradient(145deg,#5865f2,#404eed)">D</div>
+                <div>
+                  <div class="app-name">Discord</div>
+                  <div class="app-id">com.hnc.Discord</div>
+                </div>
+                <select class="menu" aria-label="Discord 策略">
+                  <option selected>隐藏</option>
+                  <option>最小化</option>
+                </select>
+                <div class="switch" role="switch" aria-checked="true" aria-label="启用 Discord"></div>
+              </div>
+            </div>
+            <p class="footnote">行内：策略菜单 · 启用开关。未启用 = 菜单栏状态 ○。</p>
+          </div>
+
+          <div class="list-shell" id="appsEmpty" hidden>
+            <div class="group empty">
+              <div>
+                <div class="glyph">✓</div>
+                <h3>还没有应用</h3>
+                <p>添加需要在后台自动隐藏或最小化的应用。</p>
+                <button class="btn primary" type="button">添加应用…</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="panel" id="panel-settings" role="tabpanel" hidden>
+          <div class="page-header">
+            <div>
+              <h2>设置</h2>
+              <p>全局行为与权限。策略在应用名单中逐项选择。</p>
+            </div>
+          </div>
+
+          <div>
+            <div class="group-label">通用</div>
+            <div class="group">
+              <div class="row">
+                <div class="label">启用监控</div>
+                <div class="trailing">
+                  <span class="hint" style="margin-right:4px"><span class="status-dot" id="monDot"></span><span id="monLabel">运行中</span></span>
+                  <div class="switch" id="monSwitch" role="switch" aria-checked="true" aria-label="启用监控"></div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">登录时启动</div>
+                <div class="trailing">
+                  <div class="switch" role="switch" aria-checked="true" aria-label="登录时启动"></div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">后台满</div>
+                <div class="trailing">
+                  <input class="field" id="secondsField" type="text" inputmode="numeric" value="30" aria-label="后台秒数" />
+                  <div class="stepper" aria-label="调整秒数">
+                    <button type="button" data-step="-5">−</button>
+                    <button type="button" data-step="5">+</button>
+                  </div>
+                  <span>秒后优化</span>
+                </div>
+              </div>
+            </div>
+            <p class="footnote">范围 5–600 秒。仅在完全遮挡后累计。</p>
+          </div>
+
+          <div>
+            <div class="group-label">权限</div>
+            <div class="group">
+              <div class="row">
+                <div class="label">辅助功能</div>
+                <div class="trailing">已授权</div>
+              </div>
+              <div class="row">
+                <div class="perm-line">
+                  <button class="btn" type="button">打开系统设置…</button>
+                  <span class="hint">仅「最小化」策略需要辅助功能；「隐藏」不需要。</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ACTIVITY -->
+        <section class="panel" id="panel-activity" role="tabpanel" hidden>
+          <div class="page-header">
+            <div>
+              <h2>最近活动</h2>
+              <p>记录自动优化、恢复与错误。</p>
+            </div>
+            <div class="stat-pill">今日 3 次</div>
+          </div>
+
+          <div class="group">
+            <div class="log-row">
+              <span class="log-time">22:14:08</span>
+              <span class="log-app">Pencil</span>
+              <span class="log-event">已优化</span>
+              <span class="log-reason">background+32s</span>
+            </div>
+            <div class="log-row">
+              <span class="log-time">22:18:41</span>
+              <span class="log-app">Pencil</span>
+              <span class="log-event">已恢复</span>
+              <span class="log-reason">activated</span>
+            </div>
+            <div class="log-row">
+              <span class="log-time">22:41:02</span>
+              <span class="log-app">腾讯文档</span>
+              <span class="log-event">已优化</span>
+              <span class="log-reason">background+30s</span>
+            </div>
+            <div class="log-row">
+              <span class="log-time">22:55:17</span>
+              <span class="log-app">Figma</span>
+              <span class="log-event">错误</span>
+              <span class="log-reason">accessibility not trusted</span>
+            </div>
+            <div class="log-row">
+              <span class="log-time">23:01:44</span>
+              <span class="log-app">Discord</span>
+              <span class="log-event">已优化</span>
+              <span class="log-reason">already_hidden</span>
+            </div>
+          </div>
+          <p class="footnote">本地环形日志，不上云。今日次数仅统计「已优化」。</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    const panels = {
+      apps: document.getElementById("panel-apps"),
+      settings: document.getElementById("panel-settings"),
+      activity: document.getElementById("panel-activity"),
+    };
+
+    document.querySelectorAll(".segment button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll(".segment button").forEach((b) => {
+          b.setAttribute("aria-selected", b === btn ? "true" : "false");
+        });
+        Object.entries(panels).forEach(([key, el]) => {
+          const on = key === tab;
+          el.classList.toggle("active", on);
+          el.hidden = !on;
+        });
+      });
+    });
+
+    document.getElementById("themeToggle").addEventListener("click", (e) => {
+      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      e.currentTarget.setAttribute("aria-pressed", next === "dark" ? "true" : "false");
+    });
+
+    const filled = document.getElementById("appsFilled");
+    const empty = document.getElementById("appsEmpty");
+    document.getElementById("emptyToggle").addEventListener("click", (e) => {
+      const showEmpty = empty.hidden;
+      empty.hidden = !showEmpty;
+      filled.hidden = showEmpty;
+      e.currentTarget.setAttribute("aria-pressed", showEmpty ? "true" : "false");
+    });
+
+    // Row selection
+    const removeBtn = document.getElementById("removeBtn");
+    document.querySelectorAll(".app-row").forEach((row) => {
+      row.addEventListener("click", (ev) => {
+        if (ev.target.closest(".switch, .menu")) return;
+        document.querySelectorAll(".app-row").forEach((r) => r.classList.remove("selected"));
+        row.classList.add("selected");
+        removeBtn.disabled = false;
+      });
+    });
+
+    // Switches
+    document.querySelectorAll(".switch").forEach((sw) => {
+      sw.addEventListener("click", () => {
+        const on = sw.getAttribute("aria-checked") === "true";
+        sw.setAttribute("aria-checked", on ? "false" : "true");
+        if (sw.id === "monSwitch") {
+          document.getElementById("monDot").classList.toggle("off", on);
+          document.getElementById("monLabel").textContent = on ? "已暂停" : "运行中";
+        }
+      });
+    });
+
+    // Seconds stepper
+    const field = document.getElementById("secondsField");
+    function clampSeconds(v) {
+      const n = Math.round(Number(v) || 30);
+      return Math.min(600, Math.max(5, n));
+    }
+    document.querySelectorAll(".stepper button").forEach((b) => {
+      b.addEventListener("click", () => {
+        field.value = String(clampSeconds(Number(field.value) + Number(b.dataset.step)));
+      });
+    });
+    field.addEventListener("change", () => {
+      field.value = String(clampSeconds(field.value));
+    });
+  </script>
+</body>
+</html>

@@ -10,11 +10,8 @@ final class MenuBarController: NSObject {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         super.init()
         if let button = statusItem.button {
-            button.image = NSImage(
-                systemSymbolName: "pause.rectangle",
-                accessibilityDescription: "RenderPause Pro"
-            )
-            button.image?.isTemplate = true
+            button.image = Self.statusItemImage()
+            button.toolTip = "RenderPause Pro"
         }
         reload()
     }
@@ -103,16 +100,20 @@ final class MenuBarController: NSObject {
         prefs.target = self
         menu.addItem(prefs)
 
-        let ax = PermissionGate.isAccessibilityTrusted()
-        if !ax {
-            let axItem = NSMenuItem(
-                title: "授权辅助功能…",
-                action: #selector(openAX),
-                keyEquivalent: ""
-            )
-            axItem.target = self
-            menu.addItem(axItem)
-            menu.addItem(.separator())
+        // Minimize-only Accessibility prompt — hidden when product is hide-only.
+        if FeatureFlags.allowMinimizeMode {
+            let ax = PermissionGate.isAccessibilityTrusted()
+            let needsAX = controller.settingsStore.settings.optimizeAction == .minimize
+            if needsAX && !ax {
+                let axItem = NSMenuItem(
+                    title: "授权辅助功能…",
+                    action: #selector(openAX),
+                    keyEquivalent: ""
+                )
+                axItem.target = self
+                menu.addItem(axItem)
+                menu.addItem(.separator())
+            }
         }
 
         menu.addItem(NSMenuItem(
@@ -122,6 +123,39 @@ final class MenuBarController: NSObject {
         ))
 
         statusItem.menu = menu
+    }
+
+    /// Menu bar template icon from `MenuBarIcon` (SVG → PNG). Template for light/dark tint.
+    private static func statusItemImage() -> NSImage {
+        let pointSize = NSSize(width: 18, height: 18)
+
+        // Xcode COMBINE_HIDPI may produce MenuBarIcon.tiff from 1x + @2x.
+        let candidates: [NSImage?] = [
+            Bundle.main.image(forResource: "MenuBarIcon"),
+            NSImage(named: "MenuBarIcon"),
+            {
+                guard let url = Bundle.main.url(forResource: "MenuBarIcon", withExtension: "tiff")
+                        ?? Bundle.main.url(forResource: "MenuBarIcon", withExtension: "png")
+                else { return nil }
+                return NSImage(contentsOf: url)
+            }()
+        ]
+
+        if let source = candidates.compactMap({ $0 }).first {
+            // Copy so we can set template + size without mutating cached shared image.
+            let image = NSImage(size: pointSize)
+            image.addRepresentations(source.representations)
+            image.size = pointSize
+            image.isTemplate = true
+            return image
+        }
+
+        let symbol = NSImage(
+            systemSymbolName: "pause.rectangle",
+            accessibilityDescription: "RenderPause Pro"
+        ) ?? NSImage()
+        symbol.isTemplate = true
+        return symbol
     }
 
     @objc private func toggleMonitoring() {

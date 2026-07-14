@@ -9,7 +9,7 @@ struct OnboardingView: View {
                 Text("RenderPause Pro")
                     .font(.title2.weight(.semibold))
 
-                Text("在名单应用离开前台一段时间后，自动隐藏或最小化窗口，减轻 WindowServer 负担，降低发热与耗电。")
+                Text("在名单应用离开前台一段时间后，自动隐藏窗口，减轻 WindowServer 负担，降低发热与耗电。")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -19,7 +19,7 @@ struct OnboardingView: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 bullet("默认不会优化任何应用，请先加入名单。")
-                bullet("默认策略为「隐藏」；「最小化」需要辅助功能权限。")
+                bullet("后台超过设定秒数后自动隐藏；切回应用会立即恢复。")
                 bullet("切到其他应用并等待后台秒数后触发，切回立即恢复。")
             }
 

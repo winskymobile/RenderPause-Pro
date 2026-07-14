@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>方案 C · 工具栏 + 大名单（像活动监视器/访达）</title>
+<style>
+  :root{--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC",sans-serif;--bg:#f2f2f7;--bar:#f8f8fa;--card:#fff;--line:rgba(0,0,0,.08);--label:rgba(0,0,0,.88);--sec:rgba(0,0,0,.52);--ter:rgba(0,0,0,.34);--accent:#007aff;--shadow:0 20px 50px rgba(0,0,0,.16)}
+  html[data-theme="dark"]{--bg:#1c1c1e;--bar:#2a2a2c;--card:#2c2c2e;--line:rgba(255,255,255,.08);--label:rgba(255,255,255,.92);--sec:rgba(255,255,255,.55);--ter:rgba(255,255,255,.34);--shadow:0 24px 60px rgba(0,0,0,.55)}
+  *{box-sizing:border-box}body{margin:0;font-family:var(--font);min-height:100vh;background:linear-gradient(145deg,#c7d0de,#93a2b8);color:var(--label)}
+  html[data-theme="dark"] body{background:linear-gradient(145deg,#0d0f13,#191c22)}
+  .stage{min-height:100vh;display:grid;place-items:center;padding:36px 20px 48px;gap:14px}
+  .meta{width:min(720px,100%);display:flex;justify-content:space-between;align-items:end;color:rgba(0,0,0,.5);font-size:12px}
+  html[data-theme="dark"] .meta{color:rgba(255,255,255,.45)}
+  .meta h1{margin:0 0 4px;font-size:15px;font-weight:650}
+  .meta p{margin:0;max-width:48ch;line-height:1.4}
+  .chip{border:0;border-radius:999px;padding:6px 12px;font:inherit;font-size:12px;cursor:pointer;background:rgba(255,255,255,.55)}
+  html[data-theme="dark"] .chip{background:rgba(255,255,255,.1);color:#f5f5f7}
+  .win{width:min(720px,100%);height:540px;border-radius:12px;background:var(--bg);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+  .tb{height:52px;display:flex;align-items:center;gap:12px;padding:0 14px;background:var(--bar);border-bottom:.5px solid var(--line)}
+  .dots{display:flex;gap:8px;margin-right:4px}.d{width:12px;height:12px;border-radius:50%}.c{background:#ff5f57}.m{background:#febc2e}.z{background:#28c840}
+  .title{font-size:13px;font-weight:600;margin-right:auto}
+  .seg{display:inline-flex;padding:2px;background:rgba(0,0,0,.06);border-radius:7px}
+  html[data-theme="dark"] .seg{background:rgba(255,255,255,.1)}
+  .seg button{border:0;background:transparent;padding:4px 10px;font:inherit;font-size:11.5px;border-radius:5px;cursor:pointer;color:var(--sec)}
+  .seg button.on{background:#fff;color:var(--label);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  html[data-theme="dark"] .seg button.on{background:#636366;color:#fff}
+  .status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sec)}
+  .dotlive{width:7px;height:7px;border-radius:50%;background:#34c759}
+  .toolbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:.5px solid var(--line);background:color-mix(in srgb,var(--bg) 80%,var(--card))}
+  .btn{border:0;border-radius:6px;padding:5px 11px;font:inherit;font-size:12px;cursor:pointer;background:rgba(0,0,0,.06);color:var(--label)}
+  html[data-theme="dark"] .btn{background:rgba(255,255,255,.1)}
+  .btn.primary{background:var(--accent);color:#fff}
+  .spacer{flex:1}
+  .tablewrap{flex:1;min-height:0;overflow:auto;background:var(--card)}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{text-align:left;font-size:11px;font-weight:600;color:var(--sec);padding:8px 12px;border-bottom:.5px solid var(--line);background:color-mix(in srgb,var(--bg) 70%,var(--card));position:sticky;top:0}
+  td{padding:9px 12px;border-bottom:.5px solid var(--line);vertical-align:middle}
+  tr.sel{background:rgba(0,122,255,.12)}
+  tr:hover{background:rgba(0,0,0,.025)}
+  .appcell{display:flex;align-items:center;gap:10px}
+  .ico{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:700}
+  .menu{border:0;background:rgba(0,0,0,.04);border-radius:5px;padding:3px 6px;font:inherit;font-size:12px}
+  .sw{width:34px;height:20px;border-radius:999px;background:rgba(120,120,128,.32);position:relative;display:inline-block}
+  .sw.on{background:#34c759}
+  .sw:after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff}
+  .sw.on:after{transform:translateX(14px)}
+  .drawer{border-top:.5px solid var(--line);background:var(--bar);padding:10px 14px;display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+  .drawer h3{margin:0 0 6px;font-size:11px;font-weight:650;color:var(--sec)}
+  .kv{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--sec)}
+  .kv b{color:var(--label);font-weight:500}
+  .logline{font-size:11.5px;color:var(--sec);padding:2px 0;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="meta">
+    <div>
+      <h1>方案 C · 工具栏 + 大名单</h1>
+      <p>像活动监视器/访达：顶栏状态 + 视图切换，中间大表是主角，底部抽屉放全局设置与最近日志。名单很长时最好用。</p>
+    </div>
+    <button class="chip" id="theme">浅色/深色</button>
+  </div>
+  <div class="win">
+    <div class="tb">
+      <div class="dots"><span class="d c"></span><span class="d m"></span><span class="d z"></span></div>
+      <div class="title">RenderPause Pro</div>
+      <div class="seg" id="seg">
+        <button class="on" data-v="apps">名单</button>
+        <button data-v="activity">活动</button>
+      </div>
+      <div class="status"><span class="dotlive"></span>监控中 · 30 秒</div>
+    </div>
+    <div class="toolbar">
+      <button class="btn primary">添加应用…</button>
+      <button class="btn">移除</button>
+      <div class="spacer"></div>
+      <button class="btn">打开辅助功能设置…</button>
+    </div>
+    <div class="tablewrap" id="view-apps">
+      <table>
+        <thead><tr><th style="width:42%">应用</th><th style="width:18%">策略</th><th style="width:14%">启用</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr class="sel"><td><div class="appcell"><div class="ico" style="background:#4f7fe8">P</div>Pencil</div></td><td><select class="menu"><option>隐藏</option><option>最小化</option></select></td><td><span class="sw on"></span></td><td style="color:var(--sec)">监视中</td></tr>
+          <tr><td><div class="appcell"><div class="ico" style="background:#2fb67c">腾</div>腾讯文档</div></td><td><select class="menu"><option>隐藏</option></select></td><td><span class="sw on"></span></td><td style="color:var(--sec)">已优化</td></tr>
+          <tr><td><div class="appcell"><div class="ico" style="background:#a259ff">F</div>Figma</div></td><td><select class="menu"><option>最小化</option></select></td><td><span class="sw"></span></td><td style="color:var(--sec)">已暂停</td></tr>
+          <tr><td><div class="appcell"><div class="ico" style="background:#5865f2">D</div>Discord</div></td><td><select class="menu"><option>隐藏</option></select></td><td><span class="sw on"></span></td><td style="color:var(--sec)">监视中</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tablewrap" id="view-activity" hidden>
+      <table>
+        <thead><tr><th>时间</th><th>应用</th><th>事件</th><th>原因</th></tr></thead>
+        <tbody>
+          <tr><td>22:14:08</td><td>Pencil</td><td>已优化</td><td style="color:var(--sec)">background+32s</td></tr>
+          <tr><td>22:18:41</td><td>Pencil</td><td>已恢复</td><td style="color:var(--sec)">activated</td></tr>
+          <tr><td>22:41:02</td><td>腾讯文档</td><td>已优化</td><td style="color:var(--sec)">background+30s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="drawer">
+      <div>
+        <h3>全局</h3>
+        <div class="kv"><span>启用监控</span><b>开</b></div>
+        <div class="kv"><span>后台阈值</span><b>30 秒</b></div>
+        <div class="kv"><span>登录时启动</span><b>开</b></div>
+        <div class="kv"><span>辅助功能</span><b>已授权</b></div>
+      </div>
+      <div>
+        <h3>最近 · 今日 3 次</h3>
+        <div class="logline">22:14  Pencil  已优化</div>
+        <div class="logline">22:18  Pencil  已恢复</div>
+        <div class="logline">22:41  腾讯文档  已优化</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('theme').onclick=()=>{const r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark'}
+const apps=document.getElementById('view-apps'), act=document.getElementById('view-activity')
+document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#seg button').forEach(x=>x.classList.toggle('on',x===b))
+  const v=b.dataset.v; apps.hidden=v!=='apps'; act.hidden=v!=='activity'
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>方案 B · 单页纵向（系统设置分组）</title>
+<style>
+  :root{--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC",sans-serif;--bg:#ececec;--card:#fff;--line:rgba(0,0,0,.08);--label:rgba(0,0,0,.88);--sec:rgba(0,0,0,.52);--ter:rgba(0,0,0,.34);--accent:#007aff;--shadow:0 20px 50px rgba(0,0,0,.16)}
+  html[data-theme="dark"]{--bg:#1e1e1e;--card:#2c2c2e;--line:rgba(255,255,255,.08);--label:rgba(255,255,255,.92);--sec:rgba(255,255,255,.55);--ter:rgba(255,255,255,.34);--shadow:0 24px 60px rgba(0,0,0,.55)}
+  *{box-sizing:border-box}body{margin:0;font-family:var(--font);min-height:100vh;background:linear-gradient(180deg,#d5dbe6,#a9b4c6);color:var(--label)}
+  html[data-theme="dark"] body{background:linear-gradient(180deg,#0f1115,#1a1d24)}
+  .stage{min-height:100vh;display:grid;place-items:center;padding:36px 20px 48px;gap:14px}
+  .meta{width:min(520px,100%);display:flex;justify-content:space-between;align-items:end;color:rgba(0,0,0,.5);font-size:12px}
+  html[data-theme="dark"] .meta{color:rgba(255,255,255,.45)}
+  .meta h1{margin:0 0 4px;font-size:15px;font-weight:650}
+  .meta p{margin:0;max-width:42ch;line-height:1.4}
+  .chip{border:0;border-radius:999px;padding:6px 12px;font:inherit;font-size:12px;cursor:pointer;background:rgba(255,255,255,.55)}
+  html[data-theme="dark"] .chip{background:rgba(255,255,255,.1);color:#f5f5f7}
+  .win{width:min(520px,100%);height:680px;border-radius:12px;background:var(--bg);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+  .tb{height:48px;display:grid;grid-template-columns:70px 1fr 70px;align-items:center;padding:0 14px;border-bottom:.5px solid var(--line);flex-shrink:0}
+  .dots{display:flex;gap:8px}.d{width:12px;height:12px;border-radius:50%}.c{background:#ff5f57}.m{background:#febc2e}.z{background:#28c840}
+  .title{text-align:center;font-size:13px;font-weight:600}
+  .scroll{flex:1;overflow:auto;padding:18px 20px 28px}
+  .sec{margin-bottom:18px}
+  .sec>h2{margin:0 0 6px 4px;font-size:11px;font-weight:650;color:var(--sec)}
+  .card{background:var(--card);border-radius:10px;overflow:hidden;box-shadow:0 0 0 .5px var(--line)}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px;padding:8px 14px;font-size:13px}
+  .row+.row{border-top:.5px solid var(--line)}
+  .sw{width:36px;height:21px;border-radius:999px;background:rgba(120,120,128,.32);position:relative;flex-shrink:0}
+  .sw.on{background:#34c759}
+  .sw:after{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff}
+  .sw.on:after{transform:translateX(15px)}
+  .hint{font-size:11.5px;color:var(--ter);margin:6px 4px 0;line-height:1.4}
+  .listhead{display:flex;justify-content:space-between;align-items:center;margin:0 0 6px 4px}
+  .listhead h2{margin:0;font-size:11px;font-weight:650;color:var(--sec)}
+  .btns{display:flex;gap:6px}
+  .btn{border:0;border-radius:6px;padding:3px 9px;font:inherit;font-size:12px;cursor:pointer;background:rgba(0,0,0,.06);color:var(--label)}
+  html[data-theme="dark"] .btn{background:rgba(255,255,255,.1)}
+  .app{display:grid;grid-template-columns:28px 1fr 86px 36px;gap:10px;align-items:center;padding:10px 14px}
+  .app+.app{border-top:.5px solid var(--line)}
+  .ico{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700}
+  .name{font-size:13px;font-weight:500}
+  .sub{display:none}
+  .menu{border:0;background:rgba(0,0,0,.04);border-radius:6px;padding:4px 8px;font:inherit;font-size:12px;width:100%}
+  .log{font-size:12px}
+  .log .app{grid-template-columns:56px 1fr auto;gap:8px}
+  .t{color:var(--sec);font-variant-numeric:tabular-nums;font-size:11.5px}
+  .ev{color:var(--sec)}
+  .stat{font-variant-numeric:tabular-nums;color:var(--sec);font-size:12px}
+  .inline{display:flex;align-items:center;gap:8px;color:var(--sec);font-size:13px}
+  .field{width:44px;border:.5px solid var(--line);border-radius:5px;padding:3px 6px;text-align:right;font:inherit;background:transparent;color:var(--label)}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="meta">
+    <div>
+      <h1>方案 B · 单页纵向</h1>
+      <p>无 Tab、无侧栏。像电池/聚焦：从上到下 状态 → 通用 → 权限 → 名单 → 活动。名单是视觉重心，日志限高。</p>
+    </div>
+    <button class="chip" id="theme">浅色/深色</button>
+  </div>
+  <div class="win">
+    <div class="tb"><div class="dots"><span class="d c"></span><span class="d m"></span><span class="d z"></span></div><div class="title">RenderPause Pro</div><div></div></div>
+    <div class="scroll">
+      <div class="sec">
+        <h2>状态</h2>
+        <div class="card">
+          <div class="row"><span>启用监控</span><div class="sw on"></div></div>
+          <div class="row"><span class="stat">今日已优化 3 次 · 后台 30 秒</span><span></span></div>
+        </div>
+      </div>
+      <div class="sec">
+        <h2>通用</h2>
+        <div class="card">
+          <div class="row"><span>后台满</span><div class="inline"><input class="field" value="30" /> 秒后优化</div></div>
+          <div class="row"><span>登录时启动</span><div class="sw on"></div></div>
+        </div>
+        <p class="hint">仅在完全遮挡后累计秒数。</p>
+      </div>
+      <div class="sec">
+        <h2>权限</h2>
+        <div class="card">
+          <div class="row"><span>辅助功能</span><span style="color:var(--sec)">已授权</span></div>
+          <div class="row"><button class="btn">打开系统设置…</button><span style="color:var(--sec);font-size:12px;max-width:22ch;text-align:right">仅最小化需要</span></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="listhead"><h2>应用名单</h2><div class="btns"><button class="btn">添加…</button><button class="btn">移除</button></div></div>
+        <div class="card">
+          <div class="app"><div class="ico" style="background:#4f7fe8">P</div><div class="name">Pencil</div><select class="menu"><option>隐藏</option><option>最小化</option></select><div class="sw on"></div></div>
+          <div class="app"><div class="ico" style="background:#2fb67c">腾</div><div class="name">腾讯文档</div><select class="menu"><option>隐藏</option></select><div class="sw on"></div></div>
+          <div class="app"><div class="ico" style="background:#a259ff">F</div><div class="name">Figma</div><select class="menu"><option>最小化</option></select><div class="sw"></div></div>
+        </div>
+        <p class="hint">默认不显示 Bundle ID，悬停或详情再看。</p>
+      </div>
+      <div class="sec">
+        <div class="listhead"><h2>最近活动</h2><span class="stat">今日 3 次</span></div>
+        <div class="card log">
+          <div class="app"><span class="t">22:14:08</span><span>Pencil · 已优化</span><span class="ev">+32s</span></div>
+          <div class="app"><span class="t">22:18:41</span><span>Pencil · 已恢复</span><span class="ev">activated</span></div>
+          <div class="app"><span class="t">22:41:02</span><span>腾讯文档 · 已优化</span><span class="ev">+30s</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>document.getElementById('theme').onclick=()=>{const r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark'}</script>
+</body>
+</html>
