@@ -36,6 +36,8 @@ enum MenuBarChrome {
     static let stateSize: CGFloat = 12
     static let sectionSize: CGFloat = 11
     static let kbdSize: CGFloat = 12
+    /// Extra space between app list and “添加应用” (no separator line).
+    static let listToAddGap: CGFloat = 12
 }
 
 // MARK: - Shared row chrome
@@ -424,6 +426,25 @@ final class MenuBarPlainDisabledView: NSView {
             width: max(0, bounds.width - inset * 2),
             height: 18
         )
+    }
+}
+
+
+// MARK: - Vertical spacer (no separator line)
+
+final class MenuBarSpacerView: NSView {
+    private let height: CGFloat
+
+    init(height: CGFloat) {
+        self.height = height
+        super.init(frame: .zero)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { fatalError() }
+
+    override var intrinsicContentSize: NSSize {
+        NSSize(width: MenuBarChrome.menuWidth, height: height)
     }
 }
 

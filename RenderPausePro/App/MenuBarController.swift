@@ -95,6 +95,14 @@ final class MenuBarController: NSObject, NSMenuDelegate {
             }
         }
 
+        // Spacing only (no separator line) between list and “添加应用”
+        menu.addItem(
+            MenuBarMenuItemFactory.wrap(
+                MenuBarSpacerView(height: MenuBarChrome.listToAddGap),
+                height: MenuBarChrome.listToAddGap
+            )
+        )
+
         // Add app entry under the list (always available)
         let addRow = MenuBarActionRowView()
         addRow.configure(

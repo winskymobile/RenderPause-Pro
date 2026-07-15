@@ -150,10 +150,10 @@ struct PreferencesView: View {
         .background(PrefsChrome.leftBg(scheme))
     }
 
-    /// Marketing version label, e.g. `v1.0.0`.
+    /// Marketing version label, e.g. `v1.0.1`.
     private var appVersionLabel: String {
         let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-        let version = (short?.isEmpty == false) ? short! : "1.0.0"
+        let version = (short?.isEmpty == false) ? short! : "1.0.1"
         return version.hasPrefix("v") ? version : "v\(version)"
     }
 

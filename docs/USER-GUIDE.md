@@ -1,6 +1,6 @@
 # RenderPause Pro 使用说明
 
-**版本：** v1.0.0  
+**版本：** v1.0.1  
 **系统：** macOS 26+ · Apple Silicon  
 **一句话：** 解决 M 系列芯片 macOS 闲时 GPU 占用过高；正常使用无感，只在后台真闲置时动手。
 
@@ -189,7 +189,7 @@ open /Applications/RenderPausePro.app
 ✓  腾讯文档     已隐藏
 ✓  Pencil       监控中
    Figma        已关闭
-────────────────
+
 添加应用
 ────────────────
 打开 RenderPause Pro   ⌘,
@@ -207,7 +207,7 @@ open /Applications/RenderPausePro.app
 ### 7.2 偏好设置
 
 - 默认窗口 **740×500**（最小可缩放尺寸，可放大）。  
-- 标题：`RenderPause Pro v1.0.0`。  
+- 标题：`RenderPause Pro v1.0.1`。  
 
 **左 · 通用**
 
@@ -317,7 +317,7 @@ open /Applications/RenderPausePro.app
 xcodebuild -scheme RenderPausePro -destination 'platform=macOS' -configuration Debug test
 ```
 
-版本号：`Info.plist` → `CFBundleShortVersionString`（界面显示为 `v1.0.0`）。
+版本号：`Info.plist` → `CFBundleShortVersionString`（界面显示为 `v1.0.1`）。
 
 ---
 
