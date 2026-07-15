@@ -93,7 +93,7 @@ RenderPause Pro **不是**加速前台、也不是「一键清理」。
 
 ### 菜单栏菜单
 
-状态、暂停/恢复监控、应用名单（✓ + 状态字）、打开窗口与退出。
+状态、暂停/恢复监控、应用名单（✓ + 状态字）、**添加应用**、打开窗口与退出。
 
 <img src="images/menubar-menu.png" alt="RenderPause Pro 菜单栏菜单" width="300" />
 
@@ -189,6 +189,8 @@ open /Applications/RenderPausePro.app
 ✓  腾讯文档     已隐藏
 ✓  Pencil       监控中
    Figma        已关闭
+────────────────
+添加应用
 ────────────────
 打开 RenderPause Pro   ⌘,
 退出                   ⌘Q

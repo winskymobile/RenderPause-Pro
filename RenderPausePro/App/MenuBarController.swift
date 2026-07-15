@@ -71,7 +71,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
 
         if controller.ruleStore.rules.isEmpty {
             let empty = MenuBarPlainDisabledView()
-            empty.configure(title: "名单为空 — 打开窗口后添加应用")
+            empty.configure(title: "名单为空 — 可点下方添加")
             menu.addItem(MenuBarMenuItemFactory.wrap(empty))
         } else {
             let checkOn = MenuBarMenuItemFactory.bareCheckImage()
@@ -94,6 +94,18 @@ final class MenuBarController: NSObject, NSMenuDelegate {
                 menu.addItem(MenuBarMenuItemFactory.wrap(row, height: MenuBarChrome.rowHeight))
             }
         }
+
+        // Add app entry under the list (always available)
+        let addRow = MenuBarActionRowView()
+        addRow.configure(
+            title: "添加应用",
+            icon: MenuBarMenuItemFactory.symbol("plus", pointSize: 13),
+            keyEquivalent: ""
+        )
+        addRow.onActivate = { [weak self] in
+            self?.addApps()
+        }
+        menu.addItem(MenuBarMenuItemFactory.wrap(addRow, height: MenuBarChrome.rowHeight))
 
         menu.addItem(.separator())
 
@@ -173,6 +185,10 @@ final class MenuBarController: NSObject, NSMenuDelegate {
 
     private func openPrefs() {
         controller?.showPreferences()
+    }
+
+    private func addApps() {
+        controller?.presentAddRunningAppsPicker()
     }
 
     private func openAX() {

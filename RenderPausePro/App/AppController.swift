@@ -227,4 +227,27 @@ final class AppController {
         let name = app.localizedName ?? id
         return ruleStore.upsert(AppRule.makeNew(bundleID: id, displayName: name))
     }
+
+    /// Present the running-app picker (sheet on preferences if open, otherwise modal).
+    func presentAddRunningAppsPicker(onDone: (() -> Void)? = nil) {
+        let picker = RunningAppPickerViewController(controller: self) { [weak self] in
+            self?.menuBar?.reload()
+            onDone?()
+        }
+        if let host = preferences?.window, host.isVisible, host.contentViewController != nil {
+            host.contentViewController?.presentAsSheet(picker)
+            host.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+        let win = NSWindow(contentViewController: picker)
+        win.title = "添加运行中的应用"
+        win.styleMask = [.titled, .closable]
+        win.setContentSize(NSSize(width: 440, height: 400))
+        win.center()
+        NSApp.activate(ignoringOtherApps: true)
+        // Picker `onDone` already reloads menu when the modal ends.
+        NSApp.runModal(for: win)
+        win.close()
+    }
 }
