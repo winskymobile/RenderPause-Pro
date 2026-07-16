@@ -21,6 +21,7 @@ final class AppController {
     private var menuBar: MenuBarController?
     private var preferences: PreferencesWindowController?
     private var onboardingWindow: NSWindow?
+    let updateService = UpdateService()
 
     private init() {}
 
@@ -49,6 +50,8 @@ final class AppController {
                 self?.showOnboarding()
             }
         }
+        // Background GitHub update check (silent on failure).
+        updateService.check(reason: .launch)
     }
 
     func stopAndRestoreAll() {
@@ -246,7 +249,6 @@ final class AppController {
         win.setContentSize(NSSize(width: 440, height: 400))
         win.center()
         NSApp.activate(ignoringOtherApps: true)
-        // Picker `onDone` already reloads menu when the modal ends.
         NSApp.runModal(for: win)
         win.close()
     }

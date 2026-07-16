@@ -21,5 +21,5 @@ docs/UI-REDESIGN-BRIEF.md
 docs/manual-test-checklist.md
 docs/ui-mockups/
 
-# Local release packages (uploaded as GitHub Release assets)
+# Local release packages
 dist/

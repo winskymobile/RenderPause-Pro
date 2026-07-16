@@ -150,10 +150,10 @@ struct PreferencesView: View {
         .background(PrefsChrome.leftBg(scheme))
     }
 
-    /// Marketing version label, e.g. `v1.0.1`.
+    /// Marketing version label, e.g. `v1.1.0`.
     private var appVersionLabel: String {
         let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-        let version = (short?.isEmpty == false) ? short! : "1.0.1"
+        let version = (short?.isEmpty == false) ? short! : "1.1.0"
         return version.hasPrefix("v") ? version : "v\(version)"
     }
 
@@ -253,6 +253,30 @@ struct PreferencesView: View {
                             }
                         }
                     }
+                }
+                rowLine
+                settingsRow {
+                    Text("检测更新")
+                        .font(.system(size: 13))
+                        .foregroundStyle(PrefsChrome.label(scheme))
+                    Spacer(minLength: 8)
+                    if !model.updateStatusText.isEmpty {
+                        Text(model.updateStatusText)
+                            .font(.system(size: 12))
+                            .foregroundStyle(PrefsChrome.sec(scheme))
+                            .lineLimit(1)
+                    }
+                    Button(model.updateButtonTitle) {
+                        model.performUpdatePrimaryAction()
+                    }
+                    .buttonStyle(.plain)
+                    .font(.system(size: 13))
+                    .foregroundStyle(
+                        model.updateButtonEnabled
+                            ? PrefsChrome.accent(scheme)
+                            : PrefsChrome.ter(scheme)
+                    )
+                    .disabled(!model.updateButtonEnabled)
                 }
             }
             .background(PrefsChrome.cardBg(scheme))

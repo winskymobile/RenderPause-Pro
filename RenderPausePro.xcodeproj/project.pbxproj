@@ -20,6 +20,7 @@
 		390FD1CD481911F78146C9DC /* RuleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D5AFF57762DF055C86329D /* RuleStore.swift */; };
 		39B93051934958D1B697318B /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E1DABFC407881931066A2EC /* SettingsStoreTests.swift */; };
 		3A37D995BC76E3D6A25FD8C7 /* RuleStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240A3217BEC48AD5A8A6275F /* RuleStoreTests.swift */; };
+		401FD3EF966A17345420B3CC /* UpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD740616AB06B4A2187C9146 /* UpdateService.swift */; };
 		424EF4A18A664262BDF03AEB /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74C5B2F589A080F799E6CCD /* FeatureFlags.swift */; };
 		440F4D6696F4C9D68BDCF9C8 /* AppMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E7AA4F58D452AE8ED14A1D /* AppMain.swift */; };
 		5B8F93396F1DBBF1500F5E80 /* PolicyEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3710DC9C36CD2905B5D0C486 /* PolicyEngine.swift */; };
@@ -34,8 +35,10 @@
 		8FEF15B71D2CFCC044810673 /* MinimizeActuator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBD9D707D4FCA418B057B17C /* MinimizeActuator.swift */; };
 		A016DB5CE06C5A413FCCCDA8 /* LogEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0229236AAF9CA11057561E /* LogEntry.swift */; };
 		A626178136D5C5A71EDCD9F0 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82BD501BE542D1DB5D1044E0 /* AppSettings.swift */; };
+		B660C8E0122D22A4659726F9 /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B639E531E595B63FF1784F85 /* AppVersion.swift */; };
 		BA0160E6E273524301D2D6C8 /* PermissionGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3377727397B78CD78E9C99EC /* PermissionGate.swift */; };
 		C021BB46989E91B31AB7CA83 /* ActionLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37BCE226F0DAD7D65F62E85 /* ActionLog.swift */; };
+		C032D97B2D91A1867A3987F6 /* AppVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15992CE42A890D3817D1EADB /* AppVersionTests.swift */; };
 		C12454349B072797356A9641 /* PreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296788FC88D522353FB8238A /* PreferencesWindowController.swift */; };
 		C2971429796116368438E5B6 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 178D58E4478F7108AD5C2D7F /* MenuBarController.swift */; };
 		C58335252503BAA65E9E36BE /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A5DA3F9B04F106B7B964CE /* PreferencesView.swift */; };
@@ -62,6 +65,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		15992CE42A890D3817D1EADB /* AppVersionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersionTests.swift; sourceTree = "<group>"; };
 		178D58E4478F7108AD5C2D7F /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
 		205159B01973518F975A0E25 /* OcclusionDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OcclusionDetectorTests.swift; sourceTree = "<group>"; };
 		240A3217BEC48AD5A8A6275F /* RuleStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleStoreTests.swift; sourceTree = "<group>"; };
@@ -92,7 +96,9 @@
 		A7F6388F582F87AA4E9EAC7B /* PolicyEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyEngineTests.swift; sourceTree = "<group>"; };
 		AA1408325638D1785E3574B9 /* WatchState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchState.swift; sourceTree = "<group>"; };
 		B1D7252E3DECE2CA99CF625E /* MenuBarIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuBarIcon.png; sourceTree = "<group>"; };
+		B639E531E595B63FF1784F85 /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		B7E7AA4F58D452AE8ED14A1D /* AppMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMain.swift; sourceTree = "<group>"; };
+		BD740616AB06B4A2187C9146 /* UpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateService.swift; sourceTree = "<group>"; };
 		CBD9D707D4FCA418B057B17C /* MinimizeActuator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimizeActuator.swift; sourceTree = "<group>"; };
 		D0635E6ECFF2514877AB6403 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		D6EBC2B311B49FCC80354B1C /* BundleIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleIdentity.swift; sourceTree = "<group>"; };
@@ -165,10 +171,12 @@
 		41F386AEE816C6D0E020AB55 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				B639E531E595B63FF1784F85 /* AppVersion.swift */,
 				D6EBC2B311B49FCC80354B1C /* BundleIdentity.swift */,
 				D74C5B2F589A080F799E6CCD /* FeatureFlags.swift */,
 				54CFDC444BED620FEDF1DF77 /* LaunchAtLogin.swift */,
 				3377727397B78CD78E9C99EC /* PermissionGate.swift */,
+				BD740616AB06B4A2187C9146 /* UpdateService.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -239,6 +247,7 @@
 		B129FF8428ADDFCFC7F03DC1 /* RenderPauseProTests */ = {
 			isa = PBXGroup;
 			children = (
+				15992CE42A890D3817D1EADB /* AppVersionTests.swift */,
 				205159B01973518F975A0E25 /* OcclusionDetectorTests.swift */,
 				A7F6388F582F87AA4E9EAC7B /* PolicyEngineTests.swift */,
 				240A3217BEC48AD5A8A6275F /* RuleStoreTests.swift */,
@@ -348,6 +357,7 @@
 				440F4D6696F4C9D68BDCF9C8 /* AppMain.swift in Sources */,
 				D71F1A87E138D297E21AEB5D /* AppRule.swift in Sources */,
 				A626178136D5C5A71EDCD9F0 /* AppSettings.swift in Sources */,
+				B660C8E0122D22A4659726F9 /* AppVersion.swift in Sources */,
 				81CB0A0290B984B7B63D2C95 /* BundleIdentity.swift in Sources */,
 				424EF4A18A664262BDF03AEB /* FeatureFlags.swift in Sources */,
 				007442C7FDC8481EA4C36B7D /* HideActuator.swift in Sources */,
@@ -371,6 +381,7 @@
 				05266BE31AC38861008450AE /* SettingsStore.swift in Sources */,
 				0494D1ABCC16E38070888076 /* SplitViewDetector.swift in Sources */,
 				7EF1376469770A7919789DB8 /* UIAppModel.swift in Sources */,
+				401FD3EF966A17345420B3CC /* UpdateService.swift in Sources */,
 				00724BCEDBA4FB6D8C131520 /* WatchState.swift in Sources */,
 				D274F8DA0F0012D5C8D898D4 /* WorkspaceSensor.swift in Sources */,
 			);
@@ -380,6 +391,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C032D97B2D91A1867A3987F6 /* AppVersionTests.swift in Sources */,
 				D7C61A3B4224E19240AF885D /* OcclusionDetectorTests.swift in Sources */,
 				80DAB8C242B97EE224EFCEE9 /* PolicyEngineTests.swift in Sources */,
 				3A37D995BC76E3D6A25FD8C7 /* RuleStoreTests.swift in Sources */,

@@ -18,6 +18,7 @@ final class UIAppModel: ObservableObject {
     @Published var selectedRuleIDs: Set<String> = []
 
     private var refreshTimer: Timer?
+    private var cancellables = Set<AnyCancellable>()
 
     init(controller: AppController) {
         self.controller = controller
@@ -46,6 +47,10 @@ final class UIAppModel: ObservableObject {
         controller.actionLog.onChange = { [weak self] in
             Task { @MainActor in self?.refresh() }
         }
+        // Forward update service changes into this ObservableObject.
+        controller.updateService.objectWillChange.sink { [weak self] _ in
+            Task { @MainActor in self?.objectWillChange.send() }
+        }.store(in: &cancellables)
     }
 
     func refresh() {
@@ -98,6 +103,17 @@ final class UIAppModel: ObservableObject {
             alert.informativeText = error.localizedDescription
             alert.runModal()
         }
+    }
+
+    // MARK: - Updates
+
+    var updatePhase: UpdateService.Phase { controller.updateService.phase }
+    var updateStatusText: String { controller.updateService.statusText }
+    var updateButtonTitle: String { controller.updateService.buttonTitle }
+    var updateButtonEnabled: Bool { controller.updateService.isButtonEnabled }
+
+    func performUpdatePrimaryAction() {
+        controller.updateService.primaryAction()
     }
 
     func setBackgroundSeconds(_ value: TimeInterval) {

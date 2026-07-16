@@ -36,7 +36,7 @@ enum MenuBarChrome {
     static let stateSize: CGFloat = 12
     static let sectionSize: CGFloat = 11
     static let kbdSize: CGFloat = 12
-    /// Extra space between app list and “添加应用” (no separator line).
+    /// Space between app list and “添加应用” (no separator line).
     static let listToAddGap: CGFloat = 12
 }
 
@@ -428,7 +428,6 @@ final class MenuBarPlainDisabledView: NSView {
         )
     }
 }
-
 
 // MARK: - Vertical spacer (no separator line)
 

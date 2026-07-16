@@ -103,7 +103,6 @@ final class MenuBarController: NSObject, NSMenuDelegate {
             )
         )
 
-        // Add app entry under the list (always available)
         let addRow = MenuBarActionRowView()
         addRow.configure(
             title: "添加应用",
