@@ -1,6 +1,6 @@
 # RenderPause Pro 使用说明
 
-**版本：** v1.1.0  
+**版本：** v1.1.1  
 **系统：** macOS 26+ · Apple Silicon  
 **一句话：** 解决 M 系列芯片 macOS 闲时 GPU 占用过高；正常使用无感，只在后台真闲置时动手。
 
@@ -180,14 +180,14 @@ open /Applications/RenderPausePro.app
 ### 7.1 菜单栏
 
 ```
-监控中
+已开启监控
 后台 30 秒 · 今日 12 次
 ────────────────
 暂停监控
 ────────────────
 应用名单
 ✓  腾讯文档     已隐藏
-✓  Pencil       监控中
+✓  Pencil       未运行
    Figma        已关闭
 ────────────────
 打开 RenderPause Pro   ⌘,
@@ -197,7 +197,8 @@ open /Applications/RenderPausePro.app
 | 状态字 | 含义 |
 |--------|------|
 | **已隐藏** | 已因闲时策略隐藏（正在减少后台合成） |
-| **监控中** | 已启用，尚未触发或已恢复；日常使用不受影响 |
+| **监控中** | 已启用且应用正在运行，尚未触发或已恢复 |
+| **未运行** | 已启用但应用进程当前未运行 |
 | **已关闭** | 在名单但开关关，不参与 |
 
 点击名单行 = 切换该应用是否参与优化。勾选为纯 ✓、无外圈。
@@ -205,7 +206,7 @@ open /Applications/RenderPausePro.app
 ### 7.2 偏好设置
 
 - 默认窗口 **740×500**（最小可缩放尺寸，可放大）。  
-- 标题：`RenderPause Pro v1.1.0`。  
+- 标题：`RenderPause Pro v1.1.1`。  
 
 **左 · 通用**
 
@@ -316,7 +317,7 @@ open /Applications/RenderPausePro.app
 xcodebuild -scheme RenderPausePro -destination 'platform=macOS' -configuration Debug test
 ```
 
-版本号：`Info.plist` → `CFBundleShortVersionString`（界面显示为 `v1.1.0`）。
+版本号：`Info.plist` → `CFBundleShortVersionString`（界面显示为 `v1.1.1`）。
 
 ---
 

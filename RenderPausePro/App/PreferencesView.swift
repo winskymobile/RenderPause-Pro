@@ -150,10 +150,10 @@ struct PreferencesView: View {
         .background(PrefsChrome.leftBg(scheme))
     }
 
-    /// Marketing version label, e.g. `v1.1.0`.
+    /// Marketing version label, e.g. `v1.1.1`.
     private var appVersionLabel: String {
         let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-        let version = (short?.isEmpty == false) ? short! : "1.1.0"
+        let version = (short?.isEmpty == false) ? short! : "1.1.1"
         return version.hasPrefix("v") ? version : "v\(version)"
     }
 
@@ -525,10 +525,12 @@ private struct RuleRowView: View {
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            // Same status labels as menu bar (已隐藏 / 监控中 / 已关闭)
+            // Same status labels as menu bar (已隐藏 / 监控中 / 未运行 / 已关闭)
+            // 未运行：与菜单栏一致，约 0.65 透明度弱化
             Text(model.statusText(for: rule))
                 .font(.system(size: 12).monospacedDigit())
                 .foregroundStyle(PrefsChrome.sec(scheme))
+                .opacity(model.statusText(for: rule) == "未运行" ? 0.65 : 1.0)
                 .lineLimit(1)
 
             Button {

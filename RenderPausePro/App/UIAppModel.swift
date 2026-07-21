@@ -76,13 +76,15 @@ final class UIAppModel: ObservableObject {
         ruleStatuses = map
     }
 
-    /// Same copy as menu bar app rows: 已隐藏 / 监控中 / 已关闭.
+    /// Same copy as menu bar app rows: 已隐藏 / 监控中 / 未运行 / 已关闭.
     func statusText(for rule: AppRule) -> String {
-        if !rule.enabled { return "已关闭" }
-        switch ruleStatuses[rule.bundleID] ?? .watched {
-        case .optimized: return "已隐藏"
-        case .watched, .paused: return "监控中"
-        }
+        let session = ruleStatuses[rule.bundleID] ?? .watched
+        let running = controller.workspace.runningApp(bundleID: rule.bundleID) != nil
+        return MenuBarMenuItemFactory.statusText(
+            enabled: rule.enabled,
+            session: session,
+            isRunning: running
+        )
     }
 
     // MARK: - Actions

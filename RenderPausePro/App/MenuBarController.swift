@@ -42,7 +42,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
         // ── A. Header: desktop icon + status ──
         let header = MenuBarHeaderView()
         header.configure(
-            title: monitoring ? "监控中" : "已暂停监控",
+            title: monitoring ? "已开启监控" : "已暂停监控",
             subtitle: monitoring
                 ? "后台 \(secs) 秒 · 今日 \(count) 次"
                 : "今日 \(count) 次 · 恢复后继续优化",
@@ -80,11 +80,16 @@ final class MenuBarController: NSObject, NSMenuDelegate {
                 let session = controller.sessionStore.state(for: rule.bundleID)
                 let row = MenuBarAppRowView()
                 let bundleID = rule.bundleID
+                let running = controller.workspace.runningApp(bundleID: bundleID) != nil
                 row.configure(
                     title: rule.displayName,
                     appIcon: MenuBarMenuItemFactory.appIcon(bundleID: bundleID),
                     enabled: rule.enabled,
-                    status: MenuBarMenuItemFactory.statusText(enabled: rule.enabled, session: session),
+                    status: MenuBarMenuItemFactory.statusText(
+                        enabled: rule.enabled,
+                        session: session,
+                        isRunning: running
+                    ),
                     checkOn: checkOn,
                     checkOff: checkOff
                 )

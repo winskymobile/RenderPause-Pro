@@ -317,6 +317,8 @@ final class MenuBarAppRowView: MenuBarRowView {
     private let titleLabel = NSTextField(labelWithString: "")
     private let stateLabel = NSTextField(labelWithString: "")
     private var enabled = true
+    /// True for low-emphasis status (e.g. 未运行).
+    private var statusMuted = false
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -342,9 +344,16 @@ final class MenuBarAppRowView: MenuBarRowView {
         checkOff: NSImage
     ) {
         self.enabled = enabled
+        self.statusMuted = (status == "未运行")
         titleLabel.stringValue = title
         iconView.image = appIcon
         stateLabel.stringValue = status
+        // 未运行：与其它状态同字号，透明度约 0.65
+        stateLabel.font = .monospacedDigitSystemFont(
+            ofSize: MenuBarChrome.stateSize,
+            weight: .regular
+        )
+        stateLabel.alphaValue = statusMuted ? 0.65 : 1.0
         checkView.image = enabled ? checkOn : checkOff
         checkView.alphaValue = enabled ? 1 : 0
         highlightDidChange()
@@ -354,11 +363,22 @@ final class MenuBarAppRowView: MenuBarRowView {
     override func highlightDidChange() {
         if isHighlighted {
             titleLabel.textColor = enabled ? .white : NSColor.white.withAlphaComponent(0.82)
-            stateLabel.textColor = NSColor.white.withAlphaComponent(0.88)
+            // 未运行：相对其它状态约 0.65 透明度
+            stateLabel.textColor = statusMuted
+                ? NSColor.white.withAlphaComponent(0.65 * 0.88)
+                : NSColor.white.withAlphaComponent(0.88)
+            stateLabel.alphaValue = statusMuted ? 0.65 : 1.0
             checkView.contentTintColor = .white
         } else {
             titleLabel.textColor = enabled ? .labelColor : .tertiaryLabelColor
-            stateLabel.textColor = .secondaryLabelColor
+            if statusMuted {
+                // Same base as other status (secondary), overall ~0.65 opacity
+                stateLabel.textColor = .secondaryLabelColor
+                stateLabel.alphaValue = 0.65
+            } else {
+                stateLabel.textColor = .secondaryLabelColor
+                stateLabel.alphaValue = 1.0
+            }
             checkView.contentTintColor = .labelColor
         }
     }
@@ -513,11 +533,15 @@ enum MenuBarMenuItemFactory {
         return sized
     }
 
-    static func statusText(enabled: Bool, session: WatchState) -> String {
+    /// Row status: 已关闭 / 未运行 / 监控中 / 已隐藏.
+    /// - Parameter isRunning: process currently running (ignored when disabled/optimized).
+    static func statusText(enabled: Bool, session: WatchState, isRunning: Bool = true) -> String {
         if !enabled { return "已关闭" }
         switch session {
-        case .optimized: return "已隐藏"
-        case .watched, .paused: return "监控中"
+        case .optimized:
+            return "已隐藏"
+        case .watched, .paused:
+            return isRunning ? "监控中" : "未运行"
         }
     }
 
